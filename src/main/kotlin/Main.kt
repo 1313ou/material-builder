@@ -1,5 +1,13 @@
 package com.bbou
 
+fun printDeriveOfficialM3Colors(primaryInput: Int, tone: Int = 40): Triple<Int, Int, Int> {
+    val (primaryColor, secondaryColor, tertiaryColor) = deriveOfficialM3Colors(primaryInput, tone)
+    println("Primary (Tone $tone): ${primaryColor.toColorString()}")
+    println("Secondary (Tone $tone): ${secondaryColor.toColorString()}")
+    println("Tertiary (Tone $tone): ${tertiaryColor.toColorString()}")
+    return Triple(primaryColor, secondaryColor, tertiaryColor)
+}
+
 //// Vibrant Surface: #FBF9F8 Surface Container: #EFEDED Custom Primary Hint: #1B6D24
 // Example: A very pale mint surface and a deeper forest green primary hint
 // val args = listOf("#E0F2F1", "#2E7D32", "#FF0000", "#00FF00")
@@ -15,6 +23,13 @@ fun main(args: Array<String>) {
             val surfaceInput = surfaceHex.toColorInt()
             val primaryInput = primaryHex.toColorInt()
             generateFullVibrantPalette(surfaceInput, primaryInput)
+        }
+
+        "derive" -> {
+            val primaryHex = args[1]
+            println("From $primaryHex")
+            val primaryInput = primaryHex.toColorInt()
+            printDeriveOfficialM3Colors(primaryInput)
         }
 
         "theme" -> {

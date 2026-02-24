@@ -2,8 +2,9 @@ package com.bbou
 
 import com.materialkolor.contrast.Contrast
 import com.materialkolor.hct.Hct
-import com.materialkolor.scheme.SchemeContent
+import com.materialkolor.palettes.CorePalette
 import com.materialkolor.palettes.TonalPalette
+import com.materialkolor.scheme.SchemeContent
 
 /**
  *  Convert to color int
@@ -14,7 +15,7 @@ fun String.toColorInt(): Int = removePrefix("#").toLong(16).toInt() or (0xFF shl
 /**
  *  Convert to '#' + hex form
  */
-private fun Int.toColorString(): String = "#${"%06X".format(this and 0xFFFFFF)}"
+fun Int.toColorString(): String = "#${"%06X".format(this and 0xFFFFFF)}"
 
 /**
  *  Convert to hue form
@@ -316,6 +317,30 @@ val surfaceRoles = listOf(
 )
 
 /**
+ * Derive the secondary and tertiary palettes from primary color
+ * Secondary: Same Hue, but Chroma is divided (muted)
+ * Tertiary: Hue is rotated by 60 degrees, Chroma is even lower
+ * @return secondaryPalette, tertiaryPalette
+ */
+fun deriveOfficialM3CPalettes(primaryInput: Int): Triple<TonalPalette, TonalPalette, TonalPalette> {
+
+    // This is the "Engine Room" of the official derivation
+    val corePalette = CorePalette.of(primaryInput)
+    return Triple(corePalette.a1, corePalette.a2, corePalette.a3)
+}
+
+/**
+ * Derive the secondary and tertiary Light mode 'main' color (Tone 40)  from primary color
+ */
+fun deriveOfficialM3Colors(primaryInput: Int, tone: Int = 40): Triple<Int, Int, Int> {
+    val (a1, a2, a3) = deriveOfficialM3CPalettes(primaryInput)
+    val primary = a1.tone(tone)
+    val secondary = a2.tone(tone)
+    val tertiary = a3.tone(tone)
+    return Triple(primary, secondary, tertiary)
+}
+
+/**
  * Generate full day/night M3 Theme
  * @param surfaceInput surface wanted
  * @param primaryInput primary hint
@@ -405,14 +430,28 @@ fun generateCompleteDayNightM3XmlTheme(
         println("    <color name=\"md_theme_light_$role\">#${fromScheme(role, lightScheme)}</color>")
     }
     accentRoles.forEach { (role, data) ->
-        println("    <color name=\"md_theme_light_$role\">#${fromPalette(data.first, palettes[data.third-1])}</color>")
+        println(
+            "    <color name=\"md_theme_light_$role\">#${
+                fromPalette(
+                    data.first,
+                    palettes[data.third - 1]
+                )
+            }</color>"
+        )
     }
     println()
     surfaceRoles.forEach { role ->
         println("    <color name=\"md_theme_dark_$role\">#${fromScheme(role, darkScheme)}</color>")
     }
     accentRoles.forEach { (role, data) ->
-        println("    <color name=\"md_theme_dark_$role\">#${fromPalette(data.second, palettes[data.third-1])}</color>")
+        println(
+            "    <color name=\"md_theme_dark_$role\">#${
+                fromPalette(
+                    data.second,
+                    palettes[data.third - 1]
+                )
+            }</color>"
+        )
     }
     println("</resources>\n")
 
