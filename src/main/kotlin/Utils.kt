@@ -34,7 +34,7 @@ private fun Double.toToneString(): String = "%.2f".format(this)
 /**
  *  Convert to tone form
  */
-private fun Int.toToneString(): String = "%.2f".format(this and 0xFFFFFF)
+private fun Int.toToneString(): String = "%06X".format(this and 0xFFFFFF)
 
 /**
  *  Convert to hue + chroma form
@@ -251,32 +251,36 @@ fun generateFullDayNightXml(
     // 2. Define standard Material 3 color roles
     val roles = listOf(
         "surface" to null, // Handled by SchemeContent
-        "onSurface" to null,
-        "surfaceContainer" to null,
-        "background" to null,
-        "outline" to null,
+        "onSurface" to null, // Handled by SchemeContent
+        "surfaceContainer" to null, // Handled by SchemeContent
+        "background" to null, // Handled by SchemeContent
+        "outline" to null, // Handled by SchemeContent
+
         "primary" to (40 to 80), // (Light Tone, Dark Tone)
         "onPrimary" to (100 to 20),
         "primaryContainer" to (90 to 30),
         "onPrimaryContainer" to (10 to 90),
     )
 
-    println("")
+    // colors
+    println()
     println("<resources>")
-    roles.forEach { (name, tones) ->
-        val lightHex = if (tones != null) "%06X".format(primaryPalette.tone(tones.first) and 0xFFFFFF)
-        else "%06X".format(getSchemeColor(lightScheme, name) and 0xFFFFFF)
-        val darkHex = if (tones != null) "%06X".format(primaryPalette.tone(tones.second) and 0xFFFFFF)
-        else "%06X".format(getSchemeColor(darkScheme, name) and 0xFFFFFF)
-
-        println("    <color name=\"md_theme_light_$name\">#$lightHex</color>")
-        println("    <color name=\"md_theme_dark_$name\">#$darkHex</color>")
+    roles.forEach { (role, tones) ->
+        val lightHex = if (tones != null) fromPalette(tones.first, primaryPalette) else fromScheme(role, lightScheme)
+        val darkHex = if (tones != null) fromPalette(tones.second, primaryPalette) else fromScheme(role, darkScheme)
+        println("    <color name=\"md_theme_light_$role\">#$lightHex</color>")
+        println("    <color name=\"md_theme_dark_$role\">#$darkHex</color>")
     }
     println("</resources>\n")
 
+    // thmes
     generateThemeXml("Theme.MyApp.Light", "light", roles.map { it.first })
     generateThemeXml("Theme.MyApp.Dark", "dark", roles.map { it.first })
 }
+
+private fun fromPalette(tone: Int, palette: TonalPalette): String = palette.tone(tone).toToneString()
+
+private fun fromScheme(role: String, scheme: SchemeContent): String = getSchemeColor(scheme, role).toToneString()
 
 fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: String) {
     // 1. Convert colors to HCT to get their Tones
