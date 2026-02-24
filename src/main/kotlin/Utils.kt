@@ -154,90 +154,91 @@ private fun printThemeXml(themeName: String, mode: String, roles: Collection<Str
 }
 
 // Light tone, dark tone, palette index (1= primary, 2=secondary, 3=tertiary)
+// Role definitions: Key -> (LightTone, DarkTone, Palette)
 val accentRoles = mapOf(
     "primary" to Triple(40, 80, 1),
     "onPrimary" to Triple(100, 20, 1),
     "primaryContainer" to Triple(90, 30, 1),
     "onPrimaryContainer" to Triple(10, 90, 1),
-    "inversePrimary" to null,
-    "primaryFixed" to null,
-    "onPrimaryFixed" to null,
-    "primaryFixedDim" to null,
-    "onPrimaryFixedVariant" to null,
+    "inversePrimary" to Triple(80, 40, 1),
+    "primaryFixed" to Triple(90, 90, 1),
+    "onPrimaryFixed" to Triple(10, 10, 1),
+    "primaryFixedDim" to Triple(80, 80, 1),
+    "onPrimaryFixedVariant" to Triple(30, 30, 1),
 
-    "primary_mediumContrast" to null,
-    "onPrimary_mediumContrast" to null,
-    "primaryContainer_mediumContrast" to null,
-    "onPrimaryContainer_mediumContrast" to null,
-    "inversePrimary_mediumContrast" to null,
-    "primaryFixed_mediumContrast" to null,
-    "onPrimaryFixed_mediumContrast" to null,
-    "primaryFixedDim_mediumContrast" to null,
-    "onPrimaryFixedVariant_mediumContrast" to null,
+    "inversePrimary_mediumContrast" to Triple(80, 40, 1),
+    "primary_mediumContrast" to Triple(26, 90, 1),
+    "onPrimary_mediumContrast" to Triple(100, 0, 1),
+    "primaryContainer_mediumContrast" to Triple(54, 54, 1),
+    "onPrimaryContainer_mediumContrast" to Triple(0, 100, 1),
+    "primaryFixed_mediumContrast" to Triple(74, 74, 1),
+    "onPrimaryFixed_mediumContrast" to Triple(0, 0, 1),
+    "primaryFixedDim_mediumContrast" to Triple(58, 58, 1),
+    "onPrimaryFixedVariant_mediumContrast" to Triple(10, 10, 1),
 
-    "primary_highContrast" to null,
-    "onPrimary_highContrast" to null,
-    "primaryContainer_highContrast" to null,
-    "onPrimaryContainer_highContrast" to null,
-    "inversePrimary_highContrast" to null,
-    "primaryFixed_highContrast" to null,
-    "onPrimaryFixed_highContrast" to null,
-    "primaryFixedDim_highContrast" to null,
-    "onPrimaryFixedVariant_highContrast" to null,
+    "inversePrimary_highContrast" to Triple(90, 20, 1),
+    "primary_highContrast" to Triple(0, 100, 1),
+    "onPrimary_highContrast" to Triple(100, 0, 1),
+    "primaryContainer_highContrast" to Triple(36, 74, 1),
+    "onPrimaryContainer_highContrast" to Triple(100, 0, 1),
+    "primaryFixed_highContrast" to Triple(54, 54, 1),
+    "onPrimaryFixed_highContrast" to Triple(100, 100, 1),
+    "primaryFixedDim_highContrast" to Triple(36, 36, 1),
+    "onPrimaryFixedVariant_highContrast" to Triple(0, 0, 1),
 
     "secondary" to Triple(40, 80, 2),
     "onSecondary" to Triple(100, 20, 2),
     "secondaryContainer" to Triple(90, 30, 2),
     "onSecondaryContainer" to Triple(10, 90, 2),
-    "secondaryFixed" to null,
-    "onSecondaryFixed" to null,
-    "secondaryFixedDim" to null,
-    "onSecondaryFixedVariant" to null,
+    "secondaryFixed" to Triple(90, 90, 2),
+    "onSecondaryFixed" to Triple(10, 10, 2),
+    "secondaryFixedDim" to Triple(80, 80, 2),
+    "onSecondaryFixedVariant" to Triple(30, 30, 2),
 
-    "secondary_mediumContrast" to null,
-    "onSecondary_mediumContrast" to null,
-    "secondaryContainer_mediumContrast" to null,
-    "onSecondaryContainer_mediumContrast" to null,
-    "secondaryFixed_mediumContrast" to null,
-    "onSecondaryFixed_mediumContrast" to null,
-    "secondaryFixedDim_mediumContrast" to null,
-    "onSecondaryFixedVariant_mediumContrast" to null,
+    "secondary_mediumContrast" to Triple(26, 90, 2),
+    "onSecondary_mediumContrast" to Triple(100, 0, 2),
+    "secondaryContainer_mediumContrast" to Triple(54, 54, 2),
+    "onSecondaryContainer_mediumContrast" to Triple(0, 100, 2),
+    "secondaryFixed_mediumContrast" to Triple(74, 74, 2),
+    "onSecondaryFixed_mediumContrast" to Triple(0, 0, 2),
+    "secondaryFixedDim_mediumContrast" to Triple(58, 58, 2),
+    "onSecondaryFixedVariant_mediumContrast" to Triple(10, 10, 2),
 
-    "secondary_highContrast" to null,
-    "onSecondary_highContrast" to null,
-    "secondaryContainer_highContrast" to null,
-    "onSecondaryContainer_highContrast" to null,
-    "secondaryFixed_highContrast" to null,
-    "onSecondaryFixed_highContrast" to null,
-    "secondaryFixedDim_highContrast" to null,
-    "onSecondaryFixedVariant_highContrast" to null,
+    "secondary_highContrast" to Triple(0, 100, 2),
+    "onSecondary_highContrast" to Triple(100, 0, 2),
+    "secondaryContainer_highContrast" to Triple(36, 74, 2),
+    "onSecondaryContainer_highContrast" to Triple(100, 0, 2),
+    "secondaryFixed_highContrast" to Triple(54, 54, 2),
+    "onSecondaryFixed_highContrast" to Triple(100, 100, 2),
+    "secondaryFixedDim_highContrast" to Triple(36, 36, 2),
+    "onSecondaryFixedVariant_highContrast" to Triple(0, 0, 2),
 
     "tertiary" to Triple(40, 80, 3),
     "onTertiary" to Triple(100, 20, 3),
     "tertiaryContainer" to Triple(90, 30, 3),
     "onTertiaryContainer" to Triple(10, 90, 3),
-    "tertiaryFixed" to null,
-    "onTertiaryFixed" to null,
-    "tertiaryFixedDim" to null,
-    "onTertiaryFixedVariant" to null,
+    "tertiaryFixed" to Triple(90, 90, 3),
+    "onTertiaryFixed" to Triple(10, 10, 3),
+    "tertiaryFixedDim" to Triple(80, 80, 3),
+    "onTertiaryFixedVariant" to Triple(30, 30, 3),
 
-    "tertiary_mediumContrast" to null,
-    "onTertiary_mediumContrast" to null,
-    "tertiaryContainer_mediumContrast" to null,
-    "onTertiaryContainer_mediumContrast" to null,
-    "tertiaryFixed_mediumContrast" to null,
-    "onTertiaryFixed_mediumContrast" to null,
-    "tertiaryFixedDim_mediumContrast" to null,
-    "onTertiaryFixedVariant_mediumContrast" to null,
+    "tertiary_mediumContrast" to Triple(2, 90, 3),
+    "onTertiary_mediumContrast" to Triple(100, 0, 3),
+    "tertiaryContainer_mediumContrast" to Triple(54, 54, 3),
+    "onTertiaryContainer_mediumContrast" to Triple(0, 100, 3),
+    "tertiaryFixed_mediumContrast" to Triple(74, 74, 3),
+    "onTertiaryFixed_mediumContrast" to Triple(0, 0, 3),
+    "tertiaryFixedDim_mediumContrast" to Triple(58, 58, 3),
+    "onTertiaryFixedVariant_mediumContrast" to Triple(10, 10, 3),
 
-    "tertiary_highContrast" to null,
-    "onTertiary_highContrast" to null,
-    "tertiaryContainer_highContrast" to null,
-    "onTertiaryContainer_highContrast" to null,
-    "tertiaryFixed_highContrast" to null,
-    "onTertiaryFixed_highContrast" to null,
-    "tertiaryFixedDim_highContrast" to null,
-    "onTertiaryFixedVariant_highContrast" to null,
+    "tertiary_highContrast" to Triple(0, 100, 3),
+    "onTertiary_highContrast" to Triple(100, 0, 3),
+    "tertiaryContainer_highContrast" to Triple(36, 74, 3),
+    "onTertiaryContainer_highContrast" to Triple(100, 0, 3),
+    "tertiaryFixed_highContrast" to Triple(54, 54, 3),
+    "onTertiaryFixed_highContrast" to Triple(100, 100, 3),
+    "tertiaryFixedDim_highContrast" to Triple(36, 36, 3),
+    "onTertiaryFixedVariant_highContrast" to Triple(0, 0, 3),
 )
 
 // Handled by SchemeContent
@@ -392,24 +393,7 @@ fun generateCompleteDayNightM3XmlTheme(
     val primaryPalette = TonalPalette.fromHct(Hct.fromInt(primaryInput))
     val secondaryPalette = TonalPalette.fromHct(Hct.fromInt(secondaryInput))
     val tertiaryPalette = TonalPalette.fromHct(Hct.fromInt(tertiaryInput))
-
-    // Role definitions: Key -> (LightTone, DarkTone, Palette)
-    val accentRoles = mapOf(
-        "primary" to Triple(40, 80, primaryPalette),
-        "onPrimary" to Triple(100, 20, primaryPalette),
-        "primaryContainer" to Triple(90, 30, primaryPalette),
-        "onPrimaryContainer" to Triple(10, 90, primaryPalette),
-
-        "secondary" to Triple(40, 80, secondaryPalette),
-        "onSecondary" to Triple(100, 20, secondaryPalette),
-        "secondaryContainer" to Triple(90, 30, secondaryPalette),
-        "onSecondaryContainer" to Triple(10, 90, secondaryPalette),
-
-        "tertiary" to Triple(40, 80, tertiaryPalette),
-        "onTertiary" to Triple(100, 20, tertiaryPalette),
-        "tertiaryContainer" to Triple(90, 30, tertiaryPalette),
-        "onTertiaryContainer" to Triple(10, 90, tertiaryPalette)
-    )
+    val palettes = arrayOf(primaryPalette, secondaryPalette, tertiaryPalette)
 
     val roles = surfaceRoles + accentRoles.keys
 
@@ -421,14 +405,14 @@ fun generateCompleteDayNightM3XmlTheme(
         println("    <color name=\"md_theme_light_$role\">#${fromScheme(role, lightScheme)}</color>")
     }
     accentRoles.forEach { (role, data) ->
-        println("    <color name=\"md_theme_light_$role\">#${fromPalette(data.first, data.third)}</color>")
+        println("    <color name=\"md_theme_light_$role\">#${fromPalette(data.first, palettes[data.third-1])}</color>")
     }
     println()
     surfaceRoles.forEach { role ->
         println("    <color name=\"md_theme_dark_$role\">#${fromScheme(role, darkScheme)}</color>")
     }
     accentRoles.forEach { (role, data) ->
-        println("    <color name=\"md_theme_dark_$role\">#${fromPalette(data.second, data.third)}</color>")
+        println("    <color name=\"md_theme_dark_$role\">#${fromPalette(data.second, palettes[data.third-1])}</color>")
     }
     println("</resources>\n")
 
