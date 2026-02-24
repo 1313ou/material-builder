@@ -153,6 +153,167 @@ private fun printThemeXml(themeName: String, mode: String, roles: Collection<Str
     println("</style>\n")
 }
 
+// Light tone, dark tone, palette index (1= primary, 2=secondary, 3=tertiary)
+val accentRoles = mapOf(
+    "primary" to Triple(40, 80, 1),
+    "onPrimary" to Triple(100, 20, 1),
+    "primaryContainer" to Triple(90, 30, 1),
+    "onPrimaryContainer" to Triple(10, 90, 1),
+    "inversePrimary" to null,
+    "primaryFixed" to null,
+    "onPrimaryFixed" to null,
+    "primaryFixedDim" to null,
+    "onPrimaryFixedVariant" to null,
+
+    "primary_mediumContrast" to null,
+    "onPrimary_mediumContrast" to null,
+    "primaryContainer_mediumContrast" to null,
+    "onPrimaryContainer_mediumContrast" to null,
+    "inversePrimary_mediumContrast" to null,
+    "primaryFixed_mediumContrast" to null,
+    "onPrimaryFixed_mediumContrast" to null,
+    "primaryFixedDim_mediumContrast" to null,
+    "onPrimaryFixedVariant_mediumContrast" to null,
+
+    "primary_highContrast" to null,
+    "onPrimary_highContrast" to null,
+    "primaryContainer_highContrast" to null,
+    "onPrimaryContainer_highContrast" to null,
+    "inversePrimary_highContrast" to null,
+    "primaryFixed_highContrast" to null,
+    "onPrimaryFixed_highContrast" to null,
+    "primaryFixedDim_highContrast" to null,
+    "onPrimaryFixedVariant_highContrast" to null,
+
+    "secondary" to Triple(40, 80, 2),
+    "onSecondary" to Triple(100, 20, 2),
+    "secondaryContainer" to Triple(90, 30, 2),
+    "onSecondaryContainer" to Triple(10, 90, 2),
+    "secondaryFixed" to null,
+    "onSecondaryFixed" to null,
+    "secondaryFixedDim" to null,
+    "onSecondaryFixedVariant" to null,
+
+    "secondary_mediumContrast" to null,
+    "onSecondary_mediumContrast" to null,
+    "secondaryContainer_mediumContrast" to null,
+    "onSecondaryContainer_mediumContrast" to null,
+    "secondaryFixed_mediumContrast" to null,
+    "onSecondaryFixed_mediumContrast" to null,
+    "secondaryFixedDim_mediumContrast" to null,
+    "onSecondaryFixedVariant_mediumContrast" to null,
+
+    "secondary_highContrast" to null,
+    "onSecondary_highContrast" to null,
+    "secondaryContainer_highContrast" to null,
+    "onSecondaryContainer_highContrast" to null,
+    "secondaryFixed_highContrast" to null,
+    "onSecondaryFixed_highContrast" to null,
+    "secondaryFixedDim_highContrast" to null,
+    "onSecondaryFixedVariant_highContrast" to null,
+
+    "tertiary" to Triple(40, 80, 3),
+    "onTertiary" to Triple(100, 20, 3),
+    "tertiaryContainer" to Triple(90, 30, 3),
+    "onTertiaryContainer" to Triple(10, 90, 3),
+    "tertiaryFixed" to null,
+    "onTertiaryFixed" to null,
+    "tertiaryFixedDim" to null,
+    "onTertiaryFixedVariant" to null,
+
+    "tertiary_mediumContrast" to null,
+    "onTertiary_mediumContrast" to null,
+    "tertiaryContainer_mediumContrast" to null,
+    "onTertiaryContainer_mediumContrast" to null,
+    "tertiaryFixed_mediumContrast" to null,
+    "onTertiaryFixed_mediumContrast" to null,
+    "tertiaryFixedDim_mediumContrast" to null,
+    "onTertiaryFixedVariant_mediumContrast" to null,
+
+    "tertiary_highContrast" to null,
+    "onTertiary_highContrast" to null,
+    "tertiaryContainer_highContrast" to null,
+    "onTertiaryContainer_highContrast" to null,
+    "tertiaryFixed_highContrast" to null,
+    "onTertiaryFixed_highContrast" to null,
+    "tertiaryFixedDim_highContrast" to null,
+    "onTertiaryFixedVariant_highContrast" to null,
+)
+
+// Handled by SchemeContent
+val surfaceRoles = listOf(
+    "surface",
+    "onSurface",
+    "surfaceVariant",
+    "onSurfaceVariant",
+    "inverseSurface",
+    "inverseOnSurface",
+    "surfaceDim",
+    "surfaceBright",
+    "surfaceContainerLowest",
+    "surfaceContainerLow",
+    "surfaceContainer",
+    "surfaceContainerHigh",
+    "surfaceContainerHighest",
+    "surface_mediumContrast",
+    "onSurface_mediumContrast",
+    "surfaceVariant_mediumContrast",
+    "onSurfaceVariant_mediumContrast",
+    "inverseSurface_mediumContrast",
+    "inverseOnSurface_mediumContrast",
+    "surfaceDim_mediumContrast",
+    "surfaceBright_mediumContrast",
+    "surfaceContainerLowest_mediumContrast",
+    "surfaceContainerLow_mediumContrast",
+    "surfaceContainer_mediumContrast",
+    "surfaceContainerHigh_mediumContrast",
+    "surfaceContainerHighest_mediumContrast",
+    "surface_highContrast",
+    "onSurface_highContrast",
+    "surfaceVariant_highContrast",
+    "onSurfaceVariant_highContrast",
+    "inverseSurface_highContrast",
+    "inverseOnSurface_highContrast",
+    "surfaceDim_highContrast",
+    "surfaceBright_highContrast",
+    "surfaceContainerLowest_highContrast",
+    "surfaceContainerLow_highContrast",
+    "surfaceContainer_highContrast",
+    "surfaceContainerHigh_highContrast",
+    "surfaceContainerHighest_highContrast",
+
+    "background",
+    "onBackground",
+    "background_mediumContrast",
+    "onBackground_mediumContrast",
+    "background_highContrast",
+    "onBackground_highContrast",
+
+    "outline",
+    "outlineVariant",
+    "outline_mediumContrast",
+    "outlineVariant_mediumContrast",
+    "outline_highContrast",
+    "outlineVariant_highContrast",
+
+    "scrim",
+    "scrim_mediumContrast",
+    "scrim_highContrast",
+
+    "error",
+    "onError",
+    "errorContainer",
+    "onErrorContainer",
+    "error_mediumContrast",
+    "onError_mediumContrast",
+    "errorContainer_mediumContrast",
+    "onErrorContainer_mediumContrast",
+    "error_highContrast",
+    "onError_highContrast",
+    "errorContainer_highContrast",
+    "onErrorContainer_highContrast",
+)
+
 /**
  * Generate full day/night M3 Theme
  * @param surfaceInput surface wanted
@@ -172,36 +333,40 @@ fun generateDayNightM3XmlTheme(
     val primaryPalette = TonalPalette.fromHct(Hct.fromInt(primaryInput))
 
     // 2. Define standard Material 3 color roles
-    val roles = listOf(
-        "surface" to null, // Handled by SchemeContent
-        "onSurface" to null, // Handled by SchemeContent
-        "surfaceContainer" to null, // Handled by SchemeContent
-        "background" to null, // Handled by SchemeContent
-        "outline" to null, // Handled by SchemeContent
-
+    val accentRoles = listOf(
         "primary" to (40 to 80), // (Light Tone, Dark Tone)
         "onPrimary" to (100 to 20),
         "primaryContainer" to (90 to 30),
         "onPrimaryContainer" to (10 to 90),
     )
 
+    val roles = surfaceRoles + accentRoles.map { it.first }
+
     // colors
     println()
     println("<resources>")
-    roles.forEach { (role, tones) ->
-        val lightHex = if (tones != null) fromPalette(tones.first, primaryPalette) else fromScheme(role, lightScheme)
+    surfaceRoles.forEach { role ->
+        val lightHex = fromScheme(role, lightScheme)
+        println("    <color name=\"md_theme_light_$role\">#$lightHex</color>")
+    }
+    accentRoles.forEach { (role, tones) ->
+        val lightHex = fromPalette(tones.second, primaryPalette)
         println("    <color name=\"md_theme_light_$role\">#$lightHex</color>")
     }
     println()
-    roles.forEach { (role, tones) ->
-        val darkHex = if (tones != null) fromPalette(tones.second, primaryPalette) else fromScheme(role, darkScheme)
+    surfaceRoles.forEach { role ->
+        val darkHex = fromScheme(role, darkScheme)
+        println("    <color name=\"md_theme_dark_$role\">#$darkHex</color>")
+    }
+    accentRoles.forEach { (role, tones) ->
+        val darkHex = fromPalette(tones.second, primaryPalette)
         println("    <color name=\"md_theme_dark_$role\">#$darkHex</color>")
     }
     println("</resources>\n")
 
     // themes
-    printThemeXml("Theme.MyApp.Light", "light", roles.map { it.first })
-    printThemeXml("Theme.MyApp.Dark", "dark", roles.map { it.first })
+    printThemeXml("Theme.MyApp.Light", "light", roles)
+    printThemeXml("Theme.MyApp.Dark", "dark", roles)
 }
 
 /**
@@ -246,6 +411,8 @@ fun generateCompleteDayNightM3XmlTheme(
         "onTertiaryContainer" to Triple(10, 90, tertiaryPalette)
     )
 
+    val roles = surfaceRoles + accentRoles.keys
+
     // 1. Output colors.xml
     println("\n<resources>")
     // Add vibrant surface colors from the scheme
@@ -266,8 +433,8 @@ fun generateCompleteDayNightM3XmlTheme(
     println("</resources>\n")
 
     // 2. Output Themes (Shortened for brevity)
-    printThemeXml("Theme.MyApp.Light", "light", accentRoles.keys + listOf("surface", "onSurface", "surfaceContainer"))
-    printThemeXml("Theme.MyApp.Dark", "dark", accentRoles.keys + listOf("surface", "onSurface", "surfaceContainer"))
+    printThemeXml("Theme.MyApp.Light", "light", roles)
+    printThemeXml("Theme.MyApp.Dark", "dark", roles)
 }
 
 fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: String) {
