@@ -9,7 +9,7 @@ import com.materialkolor.palettes.TonalPalette
  *  Convert to color int
  *  We remove the '#' if present and parse as a long to handle alpha, then toInt()
  */
-private fun String.toColorInt(): Int = removePrefix("#").toLong(16).toInt() or (0xFF shl 24)
+fun String.toColorInt(): Int = removePrefix("#").toLong(16).toInt() or (0xFF shl 24)
 
 /**
  *  Convert to '#' + hex form
@@ -158,7 +158,7 @@ private fun printThemeXml(themeName: String, mode: String, roles: Collection<Str
  * @param surfaceInput surface wanted
  * @param primaryInput primary hint
  */
-fun generateDayNightXmlM3Theme(
+fun generateDayNightM3XmlTheme(
     surfaceInput: Int,
     primaryInput: Int
 ) {
@@ -190,8 +190,11 @@ fun generateDayNightXmlM3Theme(
     println("<resources>")
     roles.forEach { (role, tones) ->
         val lightHex = if (tones != null) fromPalette(tones.first, primaryPalette) else fromScheme(role, lightScheme)
-        val darkHex = if (tones != null) fromPalette(tones.second, primaryPalette) else fromScheme(role, darkScheme)
         println("    <color name=\"md_theme_light_$role\">#$lightHex</color>")
+    }
+    println()
+    roles.forEach { (role, tones) ->
+        val darkHex = if (tones != null) fromPalette(tones.second, primaryPalette) else fromScheme(role, darkScheme)
         println("    <color name=\"md_theme_dark_$role\">#$darkHex</color>")
     }
     println("</resources>\n")
@@ -208,7 +211,7 @@ fun generateDayNightXmlM3Theme(
  * @param secondaryInput secondary hint
  * @param tertiaryInput tertiary hint
  */
-fun generateCompleteDayNightM3Theme(
+fun generateCompleteDayNightM3XmlTheme(
     surfaceInput: Int,
     primaryInput: Int,
     secondaryInput: Int,
@@ -245,14 +248,20 @@ fun generateCompleteDayNightM3Theme(
 
     // 1. Output colors.xml
     println("\n<resources>")
+    // Add vibrant surface colors from the scheme
+    val surfaceRoles = listOf("surface", "onSurface", "surfaceContainer", "background", "outline")
+    surfaceRoles.forEach { role ->
+        println("    <color name=\"md_theme_light_$role\">#${fromScheme(role, lightScheme)}</color>")
+    }
     accentRoles.forEach { (role, data) ->
         println("    <color name=\"md_theme_light_$role\">#${fromPalette(data.first, data.third)}</color>")
-        println("    <color name=\"md_theme_dark_$role\">#${fromPalette(data.second, data.third)}</color>")
     }
-    // Add vibrant surface colors from the scheme
-    listOf("surface", "onSurface", "surfaceContainer").forEach { role ->
-        println("    <color name=\"md_theme_light_$role\">#${fromScheme(role, lightScheme)}</color>")
+    println()
+    surfaceRoles.forEach { role ->
         println("    <color name=\"md_theme_dark_$role\">#${fromScheme(role, darkScheme)}</color>")
+    }
+    accentRoles.forEach { (role, data) ->
+        println("    <color name=\"md_theme_dark_$role\">#${fromPalette(data.second, data.third)}</color>")
     }
     println("</resources>\n")
 
@@ -271,32 +280,4 @@ fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: Strin
 
     val status = if (ratio >= 4.5) "✅ PASS" else "⚠️ LOW CONTRAST"
     println("$label: ${"%.2f".format(ratio)}:1 -> $status")
-}
-
-// Vibrant Surface: #FFFBF9F8
-// Surface Container: #FFEFEDED
-// Custom Primary Hint: #FF1B6D24
-fun main() {
-    // Example: A very pale mint surface and a deeper forest green primary hint
-    val args = listOf("#E0F2F1", "#2E7D32", "#FF0000", "#00FF00")
-    val args2 = listOf("#E0F2F1", "#2E7D32", "#FF0000", "#00FF00")
-
-    val surfaceHex = args[0]
-    val primaryHex = args[1]
-    val secondaryHex = args[2]
-    val tertiaryHex = args[3]
-    val surfaceInput = surfaceHex.toColorInt()
-    val primaryInput = primaryHex.toColorInt()
-    val secondaryInput = secondaryHex.toColorInt()
-    val tertiaryInput = tertiaryHex.toColorInt()
-
-    auditThemeAccessibility(surfaceInput, primaryInput, "Primary $primaryHex on Surface $surfaceHex")
-
-    generateFullVibrantPalette(surfaceInput, primaryInput)
-    println()
-    generateVibrantSurfaceTheme(surfaceInput, primaryInput, isDark = false)
-    println()
-    generateDayNightXmlM3Theme(surfaceInput, primaryInput)
-    println()
-    generateCompleteDayNightM3Theme(surfaceInput, primaryInput, secondaryInput, tertiaryInput)
 }
