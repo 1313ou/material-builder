@@ -49,7 +49,7 @@ fun main(args: Array<String>) {
             printDeriveOfficialM3Colors(primaryInput)
         }
 
-        "theme" -> {
+        "surface" -> {
             val surfaceHex = data[0]
             val primaryHex = data[1]
             val surfaceInput = surfaceHex.toColorInt()
@@ -57,44 +57,69 @@ fun main(args: Array<String>) {
             generateVibrantSurfaceTheme(surfaceInput, primaryInput, isDark = false)
         }
 
-        "generate" -> {
-            generateTheme(data)
+        "theme" -> {
+            generateTheme()
+        }
+
+        "colors" -> {
+            printXmlThemeColors(data)
+        }
+
+        "html" -> {
+            printHtmlThemeColors(data)
         }
     }
 }
 
 fun fromFile(filePath: String): List<String> {
     return File(filePath).useLines { lines ->
-        lines
-            .map { it.takeWhile({ c: Char -> !c.isWhitespace() }) }
-            .toList()
+        lines.map { it.takeWhile({ c: Char -> !c.isWhitespace() }) }.toList()
     }
 }
 
 fun printDeriveOfficialM3Colors(primaryInput: Int, tone: Int = 40): Triple<Int, Int, Int> {
-    val (primaryColor, secondaryColor, tertiaryColor) = deriveOfficialM3Colors(primaryInput, tone)
+    val accents = deriveOfficialM3Colors(primaryInput, tone)
+    printAccentColors(accents, tone)
+    return accents
+}
+
+fun printAccentColors(accents: Triple<Int, Int, Int>, tone: Int = 40) {
+    val (primaryColor, secondaryColor, tertiaryColor) = accents
     println("Primary (Tone $tone): ${primaryColor.toColorString()}")
     println("Secondary (Tone $tone): ${secondaryColor.toColorString()}")
     println("Tertiary (Tone $tone): ${tertiaryColor.toColorString()}")
-    return Triple(primaryColor, secondaryColor, tertiaryColor)
 }
 
-fun generateTheme(args: List<String>) {
+fun printXmlThemeColors(args: List<String>) {
+    val (lightColors, darkColors) = generateThemeColors(args)
+    printXmlColors(lightColors, darkColors)
+}
+
+fun printHtmlThemeColors(args: List<String>) {
+    val (lightColors, darkColors) = generateThemeColors(args)
+    printHtmlColors(lightColors, darkColors)
+}
+
+fun generateThemeColors(args: List<String>): Pair<Map<String, String>, Map<String, String>> {
     val surfaceHex = args[0]
     val primaryHex = args[1]
     val surfaceInput = surfaceHex.toColorInt()
     val primaryInput = primaryHex.toColorInt()
     auditThemeAccessibility(surfaceInput, primaryInput, "Primary $primaryHex on Surface $surfaceHex")
 
-    if (args.size > 2) {
+    return if (args.size > 2) {
         val secondaryHex = args[2]
         val tertiaryHex = args[3]
         val secondaryInput = secondaryHex.toColorInt()
         val tertiaryInput = tertiaryHex.toColorInt()
-        generateCompleteDayNightM3XmlTheme(surfaceInput, primaryInput, secondaryInput, tertiaryInput)
+        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput))
     } else {
-        generateDayNightM3XmlTheme(surfaceInput, primaryInput)
+        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput))
     }
+}
+
+fun generateTheme() {
+    generateDayNightM3XmlTheme()
 }
 
 //// Vibrant Surface: #FBF9F8 Surface Container: #EFEDED Custom Primary Hint: #1B6D24
