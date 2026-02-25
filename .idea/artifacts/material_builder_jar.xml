@@ -1,0 +1,15 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="material_builder:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/material_builder_jar</output-path>
+    <root id="archive" name="material_builder.jar">
+      <element id="module-output" name="com.bbou.material_builder.main" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.3.0/ebc4eb2b6e6c91b6c844c1e3183920d86f2ef656/kotlin-stdlib-2.3.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-cli-jvm/0.3.6/1d91898ea7a87a9ec55562b398afc9abb45d0f26/kotlinx-cli-jvm-0.3.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.materialkolor/material-color-utilities-jvm/4.1.1/2dcb9ad8414cf4e13880f28298fcff4657e67418/material-color-utilities-jvm.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.drewhamilton.poko/poko-annotations-jvm/0.21.1/1e98d2ec00742104bd01eaebbd59582dac99a62/poko-annotations-jvm-0.21.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.9.10/c7510d64a83411a649c76f2778304ddf71d7437b/kotlin-stdlib-jdk8-1.9.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.9.10/bc5bfc2690338defd5195b05c57562f2194eeb10/kotlin-stdlib-jdk7-1.9.10.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
