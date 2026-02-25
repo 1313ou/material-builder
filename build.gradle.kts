@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation("com.materialkolor:material-color-utilities:4.1.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.6")
 }
 
 kotlin {

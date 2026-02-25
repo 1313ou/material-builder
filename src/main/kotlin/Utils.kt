@@ -444,18 +444,11 @@ fun generateCompleteDayNightM3XmlTheme(
         println("    <color name=\"md_theme_dark_$role\">#${fromScheme(role, darkScheme)}</color>")
     }
     accentRoles.forEach { (role, data) ->
-        println(
-            "    <color name=\"md_theme_dark_$role\">#${
-                fromPalette(
-                    data.second,
-                    palettes[data.third - 1]
-                )
-            }</color>"
-        )
+        println("    <color name=\"md_theme_dark_$role\">#${fromPalette(data.second, palettes[data.third - 1])}</color>")
     }
     println("</resources>\n")
 
-    // 2. Output Themes (Shortened for brevity)
+    // 2. Output Themes
     printThemeXml("Theme.MyApp.Light", "light", roles)
     printThemeXml("Theme.MyApp.Dark", "dark", roles)
 }
