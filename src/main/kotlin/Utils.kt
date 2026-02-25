@@ -251,6 +251,22 @@ val primaryAccentRoles = listOf(
     "onPrimaryContainer",
 )
 
+val secondaryAccentRoles = listOf(
+    "secondary",
+    "onSecondary",
+    "secondaryContainer",
+    "onSecondaryContainer",
+)
+
+val tertiaryAccentRoles = listOf(
+    "tertiary",
+    "onTertiary",
+    "tertiaryContainer",
+    "onTertiaryContainer",
+)
+
+var accentRolesMin = primaryAccentRoles + secondaryAccentRoles + tertiaryAccentRoles
+
 // Handled by SchemeContent
 val surfaceRoles = listOf(
     "surface",
@@ -389,20 +405,20 @@ fun generateDayNightM3XmlColors(
     val lightMap = LinkedHashMap<String, String>()
     // Add vibrant surface colors from the scheme
     surfaceRolesRange.forEach { role ->
-        lightMap["light_$role"] = "#${fromScheme(role, lightScheme)}"
+        lightMap[role] = "#${fromScheme(role, lightScheme)}"
     }
     accentRolesRange.forEach { role ->
         val data = accentRoleDefs[role]!!
-        lightMap["light_$role"] = "#${fromPalette(data.first, palettes[data.third - 1])}"
+        lightMap[role] = "#${fromPalette(data.first, palettes[data.third - 1])}"
     }
 
     val darkMap = LinkedHashMap<String, String>()
     surfaceRolesRange.forEach { role ->
-        darkMap["dark_$role"] = "#${fromScheme(role, darkScheme)}"
+        darkMap[role] = "#${fromScheme(role, darkScheme)}"
     }
     accentRolesRange.forEach { role ->
         val data = accentRoleDefs[role]!!
-        darkMap["dark_$role"] = "#${fromPalette(data.second, palettes[data.third - 1])}"
+        darkMap[role] = "#${fromPalette(data.second, palettes[data.third - 1])}"
     }
     return lightMap to darkMap
 }

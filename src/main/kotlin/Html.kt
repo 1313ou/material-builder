@@ -22,10 +22,12 @@ document.getElementById('colors').addEventListener('click', function(event){ if 
 </script></body></html>
 """
 const val colorTemplate = "<tr><td>%LABEL%</td><td><div style=\"background-color:%BACKGROUND%; color:%FOREGROUND%\"><span>%VALUE%</span></div></td></tr>"
+const val colorTemplate2 = "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 
 fun printHtmlColors(lightColors: Map<String, String>, darkColors: Map<String, String>) {
-    println(toHtml(lightColors))
-    println(toHtml(darkColors))
+    //println(toHtml(lightColors))
+    //println(toHtml(darkColors))
+    println(toHtml(lightColors, darkColors))
 }
 
 private fun Int.isLight(): Boolean {
@@ -34,14 +36,32 @@ private fun Int.isLight(): Boolean {
 
 fun toHtml(colors: Map<String, String>): String {
     val colorsDiv = colors.entries.joinToString(separator = "\n") {
-        val label = "${it.key}:"
+        val label = it.key
         val value = it.value
         val foreground = if (value.toColorInt().isLight()) "#000000" else "#FFFFFF"
         colorTemplate
-            .replace("%BACKGROUND%", value)
-            .replace("%FOREGROUND%", foreground)
             .replace("%LABEL%", label)
+            .replace("%FOREGROUND%", foreground)
             .replace("%VALUE%", value)
+            .replace("%BACKGROUND%", value)
     }
+    return template.replace("%COLORS%", colorsDiv)
+}
+
+fun toHtml(lightColors: Map<String, String>, darkColors: Map<String, String>): String {
+    val colorsDiv = lightColors.keys.joinToString(separator = "\n") {
+        val lightValue = lightColors[it]!!
+        val darkValue = darkColors[it]!!
+        val lightForeground = if (lightValue.toColorInt().isLight()) "#000000" else "#FFFFFF"
+        val darkForeground = if (lightValue.toColorInt().isLight()) "#000000" else "#FFFFFF"
+        colorTemplate2
+            .replace("%LABEL%", it)
+            .replace("%LVALUE%", lightValue)
+            .replace("%DVALUE%", lightValue)
+            .replace("%LBACKGROUND%", lightValue)
+            .replace("%LFOREGROUND%", lightForeground)
+            .replace("%DBACKGROUND%", darkValue)
+            .replace("%DFOREGROUND%", darkForeground)
+     }
     return template.replace("%COLORS%", colorsDiv)
 }

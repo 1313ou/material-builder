@@ -112,9 +112,9 @@ fun generateThemeColors(args: List<String>): Pair<Map<String, String>, Map<Strin
         val tertiaryHex = args[3]
         val secondaryInput = secondaryHex.toColorInt()
         val tertiaryInput = tertiaryHex.toColorInt()
-        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput))
+        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput), surfaceRolesRange = surfaceRolesMin, accentRolesRange = accentRolesMin)
     } else {
-        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput))
+        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput), surfaceRolesRange = surfaceRolesMin, accentRolesRange = accentRolesMin)
     }
 }
 
