@@ -10,23 +10,22 @@ fun main(args: Array<String>) {
     // Options (start with - or --)
     val operation by parser.option(ArgType.String, shortName = "o", description = "Operation").required()
     val input by parser.option(ArgType.String, shortName = "i", description = "Input file")
-    val verbose by parser.option(ArgType.Boolean, shortName = "v", description = "Verbose output").default(false)
+    val full by parser.option(ArgType.Boolean, shortName = "f", description = "Full output").default(false)
 
     // Positional Argument (no prefix)
     // vararg() to collect "everything else" into a List
     var data: List<String> by parser.argument(ArgType.String, description = "Inputs (or parameters)").vararg().optional()
 
     parser.parse(args)
-    println("operation: $operation")
-    println("input: $input")
-    println("arguments: $data")
+    System.err.println("operation: $operation")
+    System.err.println("input: $input")
+    System.err.println("arguments: $data")
     val args2 = input?.let {
         val data0 = data
         data = fromFile(it)
-        println("arguments from file: $data")
+        System.err.println("arguments from file: $data")
         data0
     }
-    println()
 
     when (operation) {
         "info" -> {
@@ -62,11 +61,11 @@ fun main(args: Array<String>) {
         }
 
         "colors" -> {
-            printXmlThemeColors(data)
+            printXmlThemeColors(data, full = full)
         }
 
         "html" -> {
-            printHtmlThemeColors(data)
+            printHtmlThemeColors(data, full = full)
         }
     }
 }
@@ -90,17 +89,17 @@ fun printAccentColors(accents: Triple<Int, Int, Int>, tone: Int = 40) {
     println("Tertiary (Tone $tone): ${tertiaryColor.toColorString()}")
 }
 
-fun printXmlThemeColors(args: List<String>) {
-    val (lightColors, darkColors) = generateThemeColors(args)
+fun printXmlThemeColors(args: List<String>, full: Boolean = false) {
+    val (lightColors, darkColors) = generateThemeColors(args, full)
     printXmlColors(lightColors, darkColors)
 }
 
-fun printHtmlThemeColors(args: List<String>) {
-    val (lightColors, darkColors) = generateThemeColors(args)
+fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {
+    val (lightColors, darkColors) = generateThemeColors(args, full)
     printHtmlColors(lightColors, darkColors)
 }
 
-fun generateThemeColors(args: List<String>): Pair<Map<String, String>, Map<String, String>> {
+fun generateThemeColors(args: List<String>, full: Boolean = false): Pair<Map<String, String>, Map<String, String>> {
     val surfaceHex = args[0]
     val primaryHex = args[1]
     val surfaceInput = surfaceHex.toColorInt()
@@ -112,9 +111,17 @@ fun generateThemeColors(args: List<String>): Pair<Map<String, String>, Map<Strin
         val tertiaryHex = args[3]
         val secondaryInput = secondaryHex.toColorInt()
         val tertiaryInput = tertiaryHex.toColorInt()
-        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput), surfaceRolesRange = surfaceRolesMin, accentRolesRange = accentRolesMin)
+        generateDayNightM3XmlColors(
+            surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput),
+            surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
+            accentRolesRange = if (full) accentRoles else accentRolesMin
+        )
     } else {
-        generateDayNightM3XmlColors(surfaceInput, listOf(primaryInput), surfaceRolesRange = surfaceRolesMin, accentRolesRange = accentRolesMin)
+        generateDayNightM3XmlColors(
+            surfaceInput, listOf(primaryInput),
+            surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
+            accentRolesRange = if (full) accentRoles else accentRolesMin
+        )
     }
 }
 

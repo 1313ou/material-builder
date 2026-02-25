@@ -442,11 +442,11 @@ fun printXmlColors(
 
 fun printXmlColors(vararg maps: Map<String, String>) {
     maps.forEach {
-        println("\n<resources>")
+        println("<resources>")
         it.forEach { (key, value) ->
-            println("\t<color name=\"$key\">#$value</color>")
+            println("\t<color name=\"$key\">$value</color>")
         }
-        println("</resources>\n")
+        println("</resources>")
     }
 }
 
@@ -470,5 +470,5 @@ fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: Strin
     val ratio = Contrast.ratioOfTones(fgTone, bgTone)
 
     val status = if (ratio >= 4.5) "✅ PASS" else "⚠️ LOW CONTRAST"
-    println("$label: ${"%.2f".format(ratio)}:1 -> $status")
+    System.err.println("$label: ${"%.2f".format(ratio)}:1 -> $status", )
 }
