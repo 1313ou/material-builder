@@ -52,12 +52,11 @@ def scrape():
 
     # Output Kotlin Map
     print("\nimport kotlin.collections.Map\n")
-    print("object GpickColorMap {")
-    print("    val data: Map<Int, String> = mapOf(")
+    print("val GPICK_COLOR_MAP: Map<Int, String> = mapOf(")
     for color_int, name in sorted(color_entries.items(), key=lambda x: x[1]):
         print(f'        {color_int} to "{name}",')
-    print("    )")
-    print("}")
+    print(")")
+
 
 if __name__ == "__main__":
     scrape()
