@@ -77,7 +77,10 @@ fun generateDayNightM3XmlColors(
 fun printTextColors(vararg maps: Map<String, String>) {
     maps.forEach {
         it.forEach { (key, value) ->
-            println("$key $value")
+            val colorInt = value.toColorInt()
+            val name = ColorNameFinder.findCSSName(colorInt)
+            val name2 = ColorNameFinder.findGpickName(colorInt)
+            println("$key $value $name $name2")
         }
     }
 }
