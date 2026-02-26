@@ -22,7 +22,8 @@ document.getElementById('colors').addEventListener('click', function(event){ if 
 </script></body></html>
 """
 const val colorTemplate = "<tr><td>%LABEL%</td><td><div style=\"background-color:%BACKGROUND%; color:%FOREGROUND%\"><span>%VALUE%</span></div></td></tr>"
-const val colorTemplate2 = "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
+const val colorTemplate2 =
+    "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 
 fun printHtmlColors(lightColors: Map<String, String>, darkColors: Map<String, String>) {
     //println(toHtml(lightColors))
@@ -62,6 +63,6 @@ fun toHtml(lightColors: Map<String, String>, darkColors: Map<String, String>): S
             .replace("%LFOREGROUND%", lightForeground)
             .replace("%DBACKGROUND%", darkValue)
             .replace("%DFOREGROUND%", darkForeground)
-     }
+    }
     return template.replace("%COLORS%", colorsDiv)
 }

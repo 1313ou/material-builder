@@ -1,8 +1,7 @@
 package com.bbou
 
-import java.io.File
-import kotlin.sequences.toList
 import kotlinx.cli.*
+import java.io.File
 
 fun main(args: Array<String>) {
     val parser = ArgParser("material-builder")
@@ -79,7 +78,7 @@ fun main(args: Array<String>) {
         }
 
         "theme" -> {
-            generateTheme()
+            printDayNightM3ThemeXml()
         }
 
         "colors" -> {
@@ -88,6 +87,10 @@ fun main(args: Array<String>) {
 
         "html" -> {
             printHtmlThemeColors(data, full = full)
+        }
+
+        "text" -> {
+            printTextThemeColors(data, full = full)
         }
     }
 }
@@ -121,6 +124,11 @@ fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {
     printHtmlColors(lightColors, darkColors)
 }
 
+fun printTextThemeColors(args: List<String>, full: Boolean = false) {
+    val (lightColors, darkColors) = generateThemeColors(args, full)
+    printTextColors(lightColors, darkColors)
+}
+
 fun generateThemeColors(args: List<String>, full: Boolean = false): Pair<Map<String, String>, Map<String, String>> {
     val surfaceHex = args[0]
     val primaryHex = args[1]
@@ -146,12 +154,3 @@ fun generateThemeColors(args: List<String>, full: Boolean = false): Pair<Map<Str
         )
     }
 }
-
-fun generateTheme() {
-    generateDayNightM3XmlTheme()
-}
-
-//// Vibrant Surface: #FBF9F8 Surface Container: #EFEDED Custom Primary Hint: #1B6D24
-// Example: A very pale mint surface and a deeper forest green primary hint
-// val args = listOf("#E0F2F1", "#2E7D32", "#FF0000", "#00FF00")
-// val args2 = listOf("#E0F2F1", "#2E7D32", "#FF0000", "#00FF00")

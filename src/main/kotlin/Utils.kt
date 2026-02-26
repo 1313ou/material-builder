@@ -35,7 +35,7 @@ private fun Double.toToneString(): String = "%.2f".format(this)
 /**
  *  Convert to tone form
  */
-private fun Int.toToneString(): String = "%06X".format(this and 0xFFFFFF)
+fun Int.toToneString(): String = "%06X".format(this and 0xFFFFFF)
 
 /**
  *  Convert to hue + chroma form
@@ -51,10 +51,6 @@ private fun Hct.toToneString(): String = "T:${this.tone.toToneString()}"
  *  Convert to hue,chroma,tone form
  */
 private fun Hct.toHueChromaToneString(): String = "${this.toHueChromaString()} ${this.toToneString()}"
-
-private fun fromPalette(tone: Int, palette: TonalPalette): String = palette.tone(tone).toToneString()
-
-private fun fromScheme(role: String, scheme: SchemeContent): String = getSchemeColor(scheme, role).toToneString()
 
 /**
  * Express colors in HCT space
@@ -186,7 +182,7 @@ fun generateVibrantSurfaceTheme(surfaceInput: Int, primaryInput: Int, isDark: Bo
     // Use Tone 40 for Light mode Primary, 80 for Dark mode
     val primaryColor: Int = if (!isDark) primaryPalette.tone(40) else primaryPalette.tone(80)
 
-    val mode = if(isDark) "dark" else "light"
+    val mode = (if (isDark) "dark" else "light").replaceFirstChar { it.uppercase() }
 
     println("<!-- Scheme Inputs -->")
     println("<!-- Surface -->")
@@ -205,116 +201,8 @@ fun generateVibrantSurfaceTheme(surfaceInput: Int, primaryInput: Int, isDark: Bo
 }
 
 /**
- * Helper to extract colors from the scheme by name
+ * Audit of contrast
  */
-fun getSchemeColor(scheme: SchemeContent, role: String): Int = when (role) {
-    "surface" -> scheme.surface
-    "onSurface" -> scheme.onSurface
-    "surfaceContainer" -> scheme.surfaceContainer
-    "background" -> scheme.background
-    "outline" -> scheme.outline
-    else -> 0
-}
-
-private fun printThemeXml(themeName: String, mode: String, roles: Collection<String>) {
-    val parent = "Theme.Material3.${mode.replaceFirstChar { it.uppercase() }}.NoActionBar"
-    println("\n<style name=\"$themeName\" parent=\"$parent\">")
-    roles.forEach {
-        val attr = "color${it.replaceFirstChar { it.uppercase() }}"
-        println("\t<item name=\"$attr\">@color/md_theme_${mode}_$it</item>")
-    }
-    println("</style>\n")
-}
-
-
-/**
- * Generate complete M3 Theme
- * @param surfaceInput surface wanted
- * @param accentHints  hints (primary, secondary, tertiary)
- * @param surfaceRolesRange surface role range
- * @param accentRolesRange  accent role range
- */
-fun generateDayNightM3XmlColors(
-    surfaceInput: Int,
-    accentHints: List<Int>,
-    surfaceRolesRange: List<String> = surfaceRoles,
-    accentRolesRange: List<String> = accentRoles,
-): Pair<Map<String, String>, Map<String, String>> {
-    val surfaceHct = Hct.fromInt(surfaceInput)
-
-    // Generate Schemes (using surface for the overall "Content" vibe)
-    val lightScheme = SchemeContent(surfaceHct, false, 0.0)
-    val darkScheme = SchemeContent(surfaceHct, true, 0.0)
-
-    // Setup accent hints
-    val accentInputs = if (accentHints.size == 3) accentHints else {
-        val primaryInput = accentHints[0]
-        deriveOfficialM3Colors(primaryInput).toList()
-    }
-
-    // Setup Palettes for hints
-    val palettes = Array(accentInputs.size) { TonalPalette.fromHct(Hct.fromInt(accentInputs[it])) }
-
-    // Light color map
-    val lightMap = LinkedHashMap<String, String>()
-    // Add vibrant surface colors from the scheme
-    surfaceRolesRange.forEach { role ->
-        lightMap[role] = "#${fromScheme(role, lightScheme)}"
-    }
-    accentRolesRange.forEach { role ->
-        val data = accentRoleDefs[role]!!
-        lightMap[role] = "#${fromPalette(data.first, palettes[data.third - 1])}"
-    }
-
-    val darkMap = LinkedHashMap<String, String>()
-    surfaceRolesRange.forEach { role ->
-        darkMap[role] = "#${fromScheme(role, darkScheme)}"
-    }
-    accentRolesRange.forEach { role ->
-        val data = accentRoleDefs[role]!!
-        darkMap[role] = "#${fromPalette(data.second, palettes[data.third - 1])}"
-    }
-    return lightMap to darkMap
-}
-
-/**
- * Generate complete M3 Theme
- * @param surfaceInput surface wanted
- * @param accentHints  hints (primary, secondary, tertiary)
- * @param surfaceRolesRange surface role range
- * @param accentRolesRange  accent role range
- */
-fun printXmlColors(
-    surfaceInput: Int,
-    accentHints: List<Int>,
-    surfaceRolesRange: List<String> = surfaceRoles,
-    accentRolesRange: List<String> = accentRoles,
-) {
-    val (lightMap, darkMap) = generateDayNightM3XmlColors(surfaceInput, accentHints, surfaceRolesRange, accentRolesRange)
-    printXmlColors(lightMap, darkMap)
-}
-
-fun printXmlColors(vararg maps: Map<String, String>) {
-    maps.forEach {
-        println("<resources>")
-        it.forEach { (key, value) ->
-            println("\t<color name=\"$key\">$value</color>")
-        }
-        println("</resources>")
-    }
-}
-
-/**
- * Generate complete M3 Theme
- * @param rolesRange  role range
- */
-fun generateDayNightM3XmlTheme(
-    rolesRange: List<String> = roles,
-) {
-    printThemeXml("Theme.MyApp.Light", "light", rolesRange)
-    printThemeXml("Theme.MyApp.Dark", "dark", rolesRange)
-}
-
 fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: String) {
     // 1. Convert colors to HCT to get their Tones
     val fgTone = Hct.fromInt(foregroundInt).tone
