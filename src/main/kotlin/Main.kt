@@ -1,5 +1,6 @@
 package com.bbou
 
+import com.bbou.ColorNameFinder.name
 import kotlinx.cli.*
 import java.io.File
 
@@ -34,6 +35,11 @@ fun main(args: Array<String>) {
         "hct" -> {
             val dataInt = data.map { it.toColorInt() }.toIntArray()
             hct(*dataInt)
+        }
+
+        "name" -> {
+            val dataInt = data.map { it.toColorInt() }.toIntArray()
+            name(*dataInt)
         }
 
         "palette" -> {

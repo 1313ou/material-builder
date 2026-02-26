@@ -6,8 +6,20 @@ URLS = {
     "Resene_Primary": "https://raw.githubusercontent.com/GNOME/gimp/master/etc/palettes/Resene.gpl",
     "Resene_Mirror": "https://raw.githubusercontent.com/itp-dwd/2017-spring/master/palettes/Resene.gpl",
     "X11_Standard": "https://raw.githubusercontent.com/swill/x11-colors/master/x11-colors.gpl"
-}
-
+    "X11_Standard": "https://raw.githubusercontent.com/aseprite/aseprite/master/data/extensions/software-palettes/x11.gpl",
+    "Resene_Standard": "https://raw.githubusercontent.com/inkscape/inkscape/master/share/palettes/Resene.gpl",
+    "GIMP_Default": "https://raw.githubusercontent.com/GNOME/gimp/master/etc/palettes/Default.gpl"}
+# The massive Resene list (1,300+ colors)
+    "https://raw.githubusercontent.com/inkscape/inkscape/master/share/palettes/Resene.gpl",
+    # The X11 list (shades of grey, etc.)
+    "https://raw.githubusercontent.com/aseprite/aseprite/master/data/extensions/software-palettes/x11.gpl",
+    # SVG/Standard list
+    "https://raw.githubusercontent.com/GNOME/gimp/master/etc/palettes/SVG.gpl"
+ "Resene": "https://raw.githubusercontent.com/inkscape/inkscape/master/share/palettes/Resene.gpl",
+     "X11": "https://raw.githubusercontent.com/aseprite/aseprite/master/data/extensions/software-palettes/x11.gpl"
+   "Resene": "https://raw.githubusercontent.com/inkscape/inkscape/master/share/palettes/Resene.gpl",
+       "X11": "https://raw.githubusercontent.com/aseprite/aseprite/master/data/extensions/software-palettes/x11.gpl",
+       "SVG": "https://raw.githubusercontent.com/GNOME/gimp/master/etc/palettes/SVG.gpl"  }
 def rgb_to_signed_int(r, g, b):
     # Standard 0xFFRRGGBB signed 32-bit Int for Kotlin
     arg_int = (0xFF << 24) | (int(r) << 16) | (int(g) << 8) | int(b)
