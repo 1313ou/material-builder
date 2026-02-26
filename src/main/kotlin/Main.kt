@@ -49,7 +49,17 @@ fun main(args: Array<String>) {
             val primaryHex = data[1]
             val surfaceInput = surfaceHex.toColorInt()
             val primaryInput = primaryHex.toColorInt()
-            generateFullVibrantPalette(surfaceInput, primaryInput)
+            generateVibrantSurfacePaletteAndPrimary(surfaceInput, primaryInput)
+        }
+
+        "surface_primary_theme" -> {
+            val surfaceHex = data[0]
+            val primaryHex = data[1]
+            val surfaceInput = surfaceHex.toColorInt()
+            val primaryInput = primaryHex.toColorInt()
+            generateVibrantSurfaceTheme(surfaceInput, primaryInput, false)
+            println()
+            generateVibrantSurfaceTheme(surfaceInput, primaryInput, true)
         }
 
         "derive" -> {

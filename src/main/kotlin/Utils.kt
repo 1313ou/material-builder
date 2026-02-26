@@ -56,10 +56,15 @@ private fun fromPalette(tone: Int, palette: TonalPalette): String = palette.tone
 
 private fun fromScheme(role: String, scheme: SchemeContent): String = getSchemeColor(scheme, role).toToneString()
 
-fun hct(vararg colorInput: Int) {
+/**
+ * Express colors in HCT space
+ *
+ * @param colorInputs colors
+ */
+fun hct(vararg colorInputs: Int) {
     println("| Hex    | Hue    | Chroma | Tone   |")
     println("|-----------------------------------| ")
-    colorInput.forEach {
+    colorInputs.forEach {
         val hex = it.toColorString()
         val hct = Hct.fromInt(it)
         val hue = hct.hue.toHueString()
@@ -67,6 +72,19 @@ fun hct(vararg colorInput: Int) {
         val tone = hct.tone.toToneString()
         println("|${hex.padEnd(8)}|${hue.padEnd(8)}|${chroma.padEnd(8)}|${tone.padEnd(8)}|")
     }
+}
+
+/**
+ * Generate tone forty of
+ *
+ * @param colorInputs colors
+ */
+fun toneOf(vararg colorInputs: Int, tone: Int = 40): IntArray {
+    return colorInputs.map {
+        val hct = Hct.fromInt(it)
+        val palette = TonalPalette.fromHct(hct)
+        palette.tone(tone)
+    }.toIntArray()
 }
 
 /**
@@ -102,22 +120,45 @@ fun palette(seedInput: Int) {
 }
 
 /**
- * Generate vibrant palette
+ * Derive the secondary and tertiary palettes from primary color
+ * Secondary: Same Hue, but Chroma is divided (muted)
+ * Tertiary: Hue is rotated by 60 degrees, Chroma is even lower
+ * @return secondaryPalette, tertiaryPalette
+ */
+fun deriveOfficialM3CPalettes(primaryInput: Int): Triple<TonalPalette, TonalPalette, TonalPalette> {
+
+    // This is the "Engine Room" of the official derivation
+    val corePalette = CorePalette.of(primaryInput)
+    return Triple(corePalette.a1, corePalette.a2, corePalette.a3)
+}
+
+/**
+ * Derive the secondary and tertiary Light mode 'main' color (Tone 40)  from primary color
+ */
+fun deriveOfficialM3Colors(primaryInput: Int, tone: Int = 40): Triple<Int, Int, Int> {
+    val (a1, a2, a3) = deriveOfficialM3CPalettes(primaryInput)
+    val primary = a1.tone(tone)
+    val secondary = a2.tone(tone)
+    val tertiary = a3.tone(tone)
+    return Triple(primary, secondary, tertiary)
+}
+
+/**
+ * Generate vibrant surface palette and primary
  *
- * @param surfaceInput surface wanted
+ * @param surfaceInput surface hint
  * @param primaryInput primary hint
  */
-fun generateFullVibrantPalette(surfaceInput: Int, primaryInput: Int) {
+fun generateVibrantSurfacePaletteAndPrimary(surfaceInput: Int, primaryInput: Int) {
 
     // Surface
     println("--- VIBRANT SURFACE PALETTE (Surface ${surfaceInput.toColorString()}) ---")
     palette(surfaceInput)
 
     // Primary
-    val primaryHct = Hct.fromInt(primaryInput)
-    val primaryPalette = TonalPalette.fromHct(primaryHct)
-    println("\n--- PRIMARY HINT (Tone 40) (Hint ${primaryInput.toColorString()} ${primaryHct.toHueChromaToneString()}) ---\") ---")
-    println("Primary: ${primaryPalette.tone(40).toColorString()}")
+    val primary40 = toneOf(primaryInput)[0]
+    println("\n--- PRIMARY (Tone 40) (Hint ${primaryInput.toColorString()} ${Hct.fromInt(primaryInput).toHueChromaToneString()}) ---\") ---")
+    println("Primary (tone 40): ${primary40.toColorString()}")
 }
 
 /**
@@ -129,12 +170,9 @@ fun generateFullVibrantPalette(surfaceInput: Int, primaryInput: Int) {
  */
 fun generateVibrantSurfaceTheme(surfaceInput: Int, primaryInput: Int, isDark: Boolean) {
 
-    // Convert to HCT
-    val surfaceHct = Hct.fromInt(surfaceInput)
-    val primaryHct = Hct.fromInt(primaryInput)
-
     // Initialize the Content Scheme
     // it keeps the surface chroma high
+    val surfaceHct = Hct.fromInt(surfaceInput)
     val scheme = SchemeContent(surfaceHct, isDark, 0.0)
 
     // Access new vibrant tokens
@@ -142,10 +180,13 @@ fun generateVibrantSurfaceTheme(surfaceInput: Int, primaryInput: Int, isDark: Bo
     val surfaceContainer = scheme.surfaceContainer
 
     // Define "Hint of Primary" manually
+    val primaryHct = Hct.fromInt(primaryInput)
     val primaryPalette = TonalPalette.fromHct(primaryHct)
 
     // Use Tone 40 for Light mode Primary, 80 for Dark mode
     val primaryColor: Int = if (!isDark) primaryPalette.tone(40) else primaryPalette.tone(80)
+
+    val mode = if(isDark) "dark" else "light"
 
     println("<!-- Scheme Inputs -->")
     println("<!-- Surface -->")
@@ -154,7 +195,7 @@ fun generateVibrantSurfaceTheme(surfaceInput: Int, primaryInput: Int, isDark: Bo
     println("<color name='primaryColor0'>${primaryInput.toColorString()}</color>")
 
     // Output
-    println("<!-- Scheme Results -->")
+    println("<!-- Scheme Results $mode -->")
     println("<!-- Vibrant surface -->")
     println("<color name='surfaceColor'>${surfaceColor.toColorString()}</color>")
     println("<!-- Surface Container -->")
@@ -185,224 +226,6 @@ private fun printThemeXml(themeName: String, mode: String, roles: Collection<Str
     println("</style>\n")
 }
 
-// Light tone, dark tone, palette index (1= primary, 2=secondary, 3=tertiary)
-// Role definitions: Key -> (LightTone, DarkTone, Palette)
-val accentRoleDefs = mapOf(
-    "primary" to Triple(40, 80, 1),
-    "onPrimary" to Triple(100, 20, 1),
-    "primaryContainer" to Triple(90, 30, 1),
-    "onPrimaryContainer" to Triple(10, 90, 1),
-    "inversePrimary" to Triple(80, 40, 1),
-    "primaryFixed" to Triple(90, 90, 1),
-    "onPrimaryFixed" to Triple(10, 10, 1),
-    "primaryFixedDim" to Triple(80, 80, 1),
-    "onPrimaryFixedVariant" to Triple(30, 30, 1),
-
-    "inversePrimary_mediumContrast" to Triple(80, 40, 1),
-    "primary_mediumContrast" to Triple(26, 90, 1),
-    "onPrimary_mediumContrast" to Triple(100, 0, 1),
-    "primaryContainer_mediumContrast" to Triple(54, 54, 1),
-    "onPrimaryContainer_mediumContrast" to Triple(0, 100, 1),
-    "primaryFixed_mediumContrast" to Triple(74, 74, 1),
-    "onPrimaryFixed_mediumContrast" to Triple(0, 0, 1),
-    "primaryFixedDim_mediumContrast" to Triple(58, 58, 1),
-    "onPrimaryFixedVariant_mediumContrast" to Triple(10, 10, 1),
-
-    "inversePrimary_highContrast" to Triple(90, 20, 1),
-    "primary_highContrast" to Triple(0, 100, 1),
-    "onPrimary_highContrast" to Triple(100, 0, 1),
-    "primaryContainer_highContrast" to Triple(36, 74, 1),
-    "onPrimaryContainer_highContrast" to Triple(100, 0, 1),
-    "primaryFixed_highContrast" to Triple(54, 54, 1),
-    "onPrimaryFixed_highContrast" to Triple(100, 100, 1),
-    "primaryFixedDim_highContrast" to Triple(36, 36, 1),
-    "onPrimaryFixedVariant_highContrast" to Triple(0, 0, 1),
-
-    "secondary" to Triple(40, 80, 2),
-    "onSecondary" to Triple(100, 20, 2),
-    "secondaryContainer" to Triple(90, 30, 2),
-    "onSecondaryContainer" to Triple(10, 90, 2),
-    "secondaryFixed" to Triple(90, 90, 2),
-    "onSecondaryFixed" to Triple(10, 10, 2),
-    "secondaryFixedDim" to Triple(80, 80, 2),
-    "onSecondaryFixedVariant" to Triple(30, 30, 2),
-
-    "secondary_mediumContrast" to Triple(26, 90, 2),
-    "onSecondary_mediumContrast" to Triple(100, 0, 2),
-    "secondaryContainer_mediumContrast" to Triple(54, 54, 2),
-    "onSecondaryContainer_mediumContrast" to Triple(0, 100, 2),
-    "secondaryFixed_mediumContrast" to Triple(74, 74, 2),
-    "onSecondaryFixed_mediumContrast" to Triple(0, 0, 2),
-    "secondaryFixedDim_mediumContrast" to Triple(58, 58, 2),
-    "onSecondaryFixedVariant_mediumContrast" to Triple(10, 10, 2),
-
-    "secondary_highContrast" to Triple(0, 100, 2),
-    "onSecondary_highContrast" to Triple(100, 0, 2),
-    "secondaryContainer_highContrast" to Triple(36, 74, 2),
-    "onSecondaryContainer_highContrast" to Triple(100, 0, 2),
-    "secondaryFixed_highContrast" to Triple(54, 54, 2),
-    "onSecondaryFixed_highContrast" to Triple(100, 100, 2),
-    "secondaryFixedDim_highContrast" to Triple(36, 36, 2),
-    "onSecondaryFixedVariant_highContrast" to Triple(0, 0, 2),
-
-    "tertiary" to Triple(40, 80, 3),
-    "onTertiary" to Triple(100, 20, 3),
-    "tertiaryContainer" to Triple(90, 30, 3),
-    "onTertiaryContainer" to Triple(10, 90, 3),
-    "tertiaryFixed" to Triple(90, 90, 3),
-    "onTertiaryFixed" to Triple(10, 10, 3),
-    "tertiaryFixedDim" to Triple(80, 80, 3),
-    "onTertiaryFixedVariant" to Triple(30, 30, 3),
-
-    "tertiary_mediumContrast" to Triple(2, 90, 3),
-    "onTertiary_mediumContrast" to Triple(100, 0, 3),
-    "tertiaryContainer_mediumContrast" to Triple(54, 54, 3),
-    "onTertiaryContainer_mediumContrast" to Triple(0, 100, 3),
-    "tertiaryFixed_mediumContrast" to Triple(74, 74, 3),
-    "onTertiaryFixed_mediumContrast" to Triple(0, 0, 3),
-    "tertiaryFixedDim_mediumContrast" to Triple(58, 58, 3),
-    "onTertiaryFixedVariant_mediumContrast" to Triple(10, 10, 3),
-
-    "tertiary_highContrast" to Triple(0, 100, 3),
-    "onTertiary_highContrast" to Triple(100, 0, 3),
-    "tertiaryContainer_highContrast" to Triple(36, 74, 3),
-    "onTertiaryContainer_highContrast" to Triple(100, 0, 3),
-    "tertiaryFixed_highContrast" to Triple(54, 54, 3),
-    "onTertiaryFixed_highContrast" to Triple(100, 100, 3),
-    "tertiaryFixedDim_highContrast" to Triple(36, 36, 3),
-    "onTertiaryFixedVariant_highContrast" to Triple(0, 0, 3),
-)
-
-val accentRoles = accentRoleDefs.keys.toList()
-
-val primaryAccentRoles = listOf(
-    "primary",
-    "onPrimary",
-    "primaryContainer",
-    "onPrimaryContainer",
-)
-
-val secondaryAccentRoles = listOf(
-    "secondary",
-    "onSecondary",
-    "secondaryContainer",
-    "onSecondaryContainer",
-)
-
-val tertiaryAccentRoles = listOf(
-    "tertiary",
-    "onTertiary",
-    "tertiaryContainer",
-    "onTertiaryContainer",
-)
-
-var accentRolesMin = primaryAccentRoles + secondaryAccentRoles + tertiaryAccentRoles
-
-// Handled by SchemeContent
-val surfaceRoles = listOf(
-    "surface",
-    "onSurface",
-    "surfaceVariant",
-    "onSurfaceVariant",
-    "inverseSurface",
-    "inverseOnSurface",
-    "surfaceDim",
-    "surfaceBright",
-    "surfaceContainerLowest",
-    "surfaceContainerLow",
-    "surfaceContainer",
-    "surfaceContainerHigh",
-    "surfaceContainerHighest",
-    "surface_mediumContrast",
-    "onSurface_mediumContrast",
-    "surfaceVariant_mediumContrast",
-    "onSurfaceVariant_mediumContrast",
-    "inverseSurface_mediumContrast",
-    "inverseOnSurface_mediumContrast",
-    "surfaceDim_mediumContrast",
-    "surfaceBright_mediumContrast",
-    "surfaceContainerLowest_mediumContrast",
-    "surfaceContainerLow_mediumContrast",
-    "surfaceContainer_mediumContrast",
-    "surfaceContainerHigh_mediumContrast",
-    "surfaceContainerHighest_mediumContrast",
-    "surface_highContrast",
-    "onSurface_highContrast",
-    "surfaceVariant_highContrast",
-    "onSurfaceVariant_highContrast",
-    "inverseSurface_highContrast",
-    "inverseOnSurface_highContrast",
-    "surfaceDim_highContrast",
-    "surfaceBright_highContrast",
-    "surfaceContainerLowest_highContrast",
-    "surfaceContainerLow_highContrast",
-    "surfaceContainer_highContrast",
-    "surfaceContainerHigh_highContrast",
-    "surfaceContainerHighest_highContrast",
-
-    "background",
-    "onBackground",
-    "background_mediumContrast",
-    "onBackground_mediumContrast",
-    "background_highContrast",
-    "onBackground_highContrast",
-
-    "outline",
-    "outlineVariant",
-    "outline_mediumContrast",
-    "outlineVariant_mediumContrast",
-    "outline_highContrast",
-    "outlineVariant_highContrast",
-
-    "scrim",
-    "scrim_mediumContrast",
-    "scrim_highContrast",
-
-    "error",
-    "onError",
-    "errorContainer",
-    "onErrorContainer",
-    "error_mediumContrast",
-    "onError_mediumContrast",
-    "errorContainer_mediumContrast",
-    "onErrorContainer_mediumContrast",
-    "error_highContrast",
-    "onError_highContrast",
-    "errorContainer_highContrast",
-    "onErrorContainer_highContrast",
-)
-
-val surfaceRolesMin = listOf("surface", "onSurface", "surfaceContainer", "background", "outline")
-
-val roles = surfaceRoles + accentRoles
-
-val rolesMin = surfaceRolesMin + primaryAccentRoles
-
-/**
- * Derive the secondary and tertiary palettes from primary color
- * Secondary: Same Hue, but Chroma is divided (muted)
- * Tertiary: Hue is rotated by 60 degrees, Chroma is even lower
- * @return secondaryPalette, tertiaryPalette
- */
-fun deriveOfficialM3CPalettes(primaryInput: Int): Triple<TonalPalette, TonalPalette, TonalPalette> {
-
-    // This is the "Engine Room" of the official derivation
-    val corePalette = CorePalette.of(primaryInput)
-    return Triple(corePalette.a1, corePalette.a2, corePalette.a3)
-}
-
-/**
- * Derive the secondary and tertiary Light mode 'main' color (Tone 40)  from primary color
- */
-fun deriveOfficialM3Colors(primaryInput: Int, tone: Int = 40): Triple<Int, Int, Int> {
-    val (a1, a2, a3) = deriveOfficialM3CPalettes(primaryInput)
-    val primary = a1.tone(tone)
-    val secondary = a2.tone(tone)
-    val tertiary = a3.tone(tone)
-    return Triple(primary, secondary, tertiary)
-}
-
-const val namePrefix = "md_theme_"
 
 /**
  * Generate complete M3 Theme
