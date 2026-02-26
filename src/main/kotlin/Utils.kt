@@ -40,16 +40,85 @@ private fun Int.toToneString(): String = "%06X".format(this and 0xFFFFFF)
 /**
  *  Convert to hue + chroma form
  */
-private fun Hct.toHueChromaString(): String = "Hue:${this.hue.toHueString()} Chroma:${this.chroma.toChromaString()}"
+private fun Hct.toHueChromaString(): String = "H:${this.hue.toHueString()} C:${this.chroma.toChromaString()}"
 
 /**
  *  Convert to tone form
  */
-private fun Hct.toToneString(): String = "Tone:${this.hue.toToneString()}"
+private fun Hct.toToneString(): String = "T:${this.tone.toToneString()}"
+
+/**
+ *  Convert to hue,chroma,tone form
+ */
+private fun Hct.toHueChromaToneString(): String = "${this.toHueChromaString()} ${this.toToneString()}"
 
 private fun fromPalette(tone: Int, palette: TonalPalette): String = palette.tone(tone).toToneString()
 
 private fun fromScheme(role: String, scheme: SchemeContent): String = getSchemeColor(scheme, role).toToneString()
+
+fun hct(vararg colorInput: Int) {
+    println("| Hex    | Hue    | Chroma | Tone   |")
+    println("|-----------------------------------| ")
+    colorInput.forEach {
+        val hex = it.toColorString()
+        val hct = Hct.fromInt(it)
+        val hue = hct.hue.toHueString()
+        val chroma = hct.chroma.toChromaString()
+        val tone = hct.tone.toToneString()
+        println("|${hex.padEnd(8)}|${hue.padEnd(8)}|${chroma.padEnd(8)}|${tone.padEnd(8)}|")
+    }
+}
+
+/**
+ * Generate vibrant palette
+ *
+ * @param seedInput seed input
+ */
+fun palette(seedInput: Int) {
+
+    val seedHct = Hct.fromInt(seedInput)
+    val palette = TonalPalette.fromHct(seedHct)
+
+    println("------------------------------------------------------------------------")
+    println("  ${seedInput.toColorString()} ${seedHct.toHueChromaToneString()})")
+    println("------------------------------------------------------------------------")
+    println("|Tone | Hex     | HCT                       | Use Case Suggestion      |")
+    println("|----------------------------------------------------------------------|")
+
+    // Loop through key Material 3 Tones
+    for (t in listOf(10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100)) {
+        val label = when (t) {
+            99 -> "Bright (Very Pale)"
+            95 -> "Container (Vibrant/Pale)"
+            90 -> "Variant (Defined)"
+            40 -> "Accent"
+            else -> ""
+        }
+        val colorInt = palette.tone(t) and 0xFFFFFF
+        val hex = colorInt.toColorString()
+        println("|${t.toString().padEnd(4)} | $hex | ${Hct.fromInt(colorInt).toHueChromaToneString().padEnd(25)} | ${label.padEnd(25)}|")
+    }
+    println("------------------------------------------------------------------------")
+}
+
+/**
+ * Generate vibrant palette
+ *
+ * @param surfaceInput surface wanted
+ * @param primaryInput primary hint
+ */
+fun generateFullVibrantPalette(surfaceInput: Int, primaryInput: Int) {
+
+    // Surface
+    println("--- VIBRANT SURFACE PALETTE (Surface ${surfaceInput.toColorString()}) ---")
+    palette(surfaceInput)
+
+    // Primary
+    val primaryHct = Hct.fromInt(primaryInput)
+    val primaryPalette = TonalPalette.fromHct(primaryHct)
+    println("\n--- PRIMARY HINT (Tone 40) (Hint ${primaryInput.toColorString()} ${primaryHct.toHueChromaToneString()}) ---\") ---")
+    println("Primary: ${primaryPalette.tone(40).toColorString()}")
+}
 
 /**
  * Generate vibrant theme
@@ -92,44 +161,6 @@ fun generateVibrantSurfaceTheme(surfaceInput: Int, primaryInput: Int, isDark: Bo
     println("<color name='surfaceContainer'>${surfaceContainer.toColorString()}</color>")
     println("<!-- Custom Primary -->")
     println("<color name='primaryColor'>${primaryColor.toColorString()}</color>")
-}
-
-/**
- * Generate vibrant palette
- *
- * @param surfaceInput surface wanted
- * @param primaryInput primary hint
- */
-fun generateFullVibrantPalette(surfaceInput: Int, primaryInput: Int) {
-
-    // Convert to HCT
-    val surfaceHct = Hct.fromInt(surfaceInput)
-    val primaryHct = Hct.fromInt(primaryInput)
-
-    // Palettes
-    val surfacePalette = TonalPalette.fromHct(surfaceHct)
-    val primaryPalette = TonalPalette.fromHct(primaryHct)
-
-    println("--- VIBRANT SURFACE PALETTE (${surfaceHct.toHueChromaString()}) ---")
-    println("Tone | Hex Code   | Use Case Suggestion")
-    println("---------------------------------------")
-
-    // Loop through key Material 3 Tones
-    val tones = listOf(10, 20, 30, 40, 50, 80, 90, 95, 98, 99, 100)
-    for (t in tones) {
-        val label = when (t) {
-            99 -> "Surface Bright (Very Pale)"
-            95 -> "Surface Container (Vibrant/Pale)"
-            90 -> "Surface Variant (Defined)"
-            40 -> "Primary-style Accent"
-            else -> ""
-        }
-        val hex = surfacePalette.tone(t).toHexString()
-        println("${t.toString().padEnd(4)} | #$hex | $label")
-    }
-
-    println("\n--- PRIMARY HINT (Tone 40) ---")
-    println("Primary: #${primaryPalette.tone(40).toHexString()}")
 }
 
 /**
@@ -470,5 +501,5 @@ fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: Strin
     val ratio = Contrast.ratioOfTones(fgTone, bgTone)
 
     val status = if (ratio >= 4.5) "✅ PASS" else "⚠️ LOW CONTRAST"
-    System.err.println("$label: ${"%.2f".format(ratio)}:1 -> $status", )
+    System.err.println("$label: ${"%.2f".format(ratio)}:1 -> $status")
 }

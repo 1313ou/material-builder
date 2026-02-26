@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
 
     // Options (start with - or --)
     val operation by parser.option(ArgType.String, shortName = "o", description = "Operation").required()
-    val input by parser.option(ArgType.String, shortName = "i", description = "Input file")
+    val file by parser.option(ArgType.String, shortName = "i", description = "Input file")
     val full by parser.option(ArgType.Boolean, shortName = "f", description = "Full output").default(false)
 
     // Positional Argument (no prefix)
@@ -18,9 +18,9 @@ fun main(args: Array<String>) {
 
     parser.parse(args)
     System.err.println("operation: $operation")
-    System.err.println("input: $input")
+    System.err.println("input: $file")
     System.err.println("arguments: $data")
-    val args2 = input?.let {
+    val args2 = file?.let {
         val data0 = data
         data = fromFile(it)
         System.err.println("arguments from file: $data")
@@ -32,7 +32,19 @@ fun main(args: Array<String>) {
             println(data)
         }
 
+        "hct" -> {
+            val dataInt = data.map { it.toColorInt() }.toIntArray()
+            hct(*dataInt)
+        }
+
         "palette" -> {
+            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) args2!![0].toInt() else 0
+            val seedHex = data[index]
+            val seedInput = seedHex.toColorInt()
+            palette(seedInput)
+        }
+
+        "surface_primary" -> {
             val surfaceHex = data[0]
             val primaryHex = data[1]
             val surfaceInput = surfaceHex.toColorInt()
@@ -41,7 +53,7 @@ fun main(args: Array<String>) {
         }
 
         "derive" -> {
-            val index = if (args.isNotEmpty()) args2!![0].toInt() else 0
+            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) args2!![0].toInt() else 0
             val primaryHex = data[index]
             println("From $primaryHex")
             val primaryInput = primaryHex.toColorInt()
