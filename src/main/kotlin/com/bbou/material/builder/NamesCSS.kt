@@ -1,4 +1,4 @@
-package com.bbou
+package com.bbou.material.builder
 
 val CSS_COLOR_MAP = mapOf(
     0xF0F8FF to "AliceBlue",

@@ -1,4 +1,4 @@
-package com.bbou
+package com.bbou.material.builder
 
 import com.materialkolor.hct.Hct
 

@@ -1,4 +1,4 @@
-package com.bbou
+package com.bbou.material.builder
 
 import com.materialkolor.hct.Hct
 import com.materialkolor.palettes.TonalPalette
@@ -78,8 +78,8 @@ fun printTextColors(vararg maps: Map<String, String>) {
     maps.forEach {
         it.forEach { (key, value) ->
             val colorInt = value.toColorInt()
-            val name = ColorNameFinder.findCSSName(colorInt)
-            val name2 = ColorNameFinder.findGpickName(colorInt)
+            val name = findCSSName(colorInt)
+            val name2 = findGpickName(colorInt)
             println("$key $value $name $name2")
         }
     }

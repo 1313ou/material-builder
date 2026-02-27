@@ -1,6 +1,5 @@
-package com.bbou
+package com.bbou.material.builder
 
-import com.bbou.ColorNameFinder.name
 import kotlinx.cli.*
 import java.io.File
 
@@ -39,7 +38,7 @@ fun main(args: Array<String>) {
 
         "name" -> {
             val dataInt = data.map { it.toColorInt() }.toIntArray()
-            name(*dataInt)
+            ColorNameFinder.Companion.name(*dataInt)
         }
 
         "palette" -> {
