@@ -28,8 +28,7 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
     // Using a standard Euclidean formula (a2+b2+c2) on polar coordinates is mathematically "incorrect"
     // for finding distance because the "width" of a hue degree changes depending on how much chroma
     // there is.
-    // (Think of it like longitudes on a globe: 1∘ at the equator is a huge distance,
-    // but 1∘ at the North Pole is nearly zero).
+    // (Think of it like longitudes on a globe: 1∘ at the equator is a huge distance, but 1∘ at the North Pole is nearly zero).
     // Solution use Cartesian Coordinates (a,b)
     fun findNameByUCSDistanceWithCartesianCoordinates(
         targetInt: Int,
