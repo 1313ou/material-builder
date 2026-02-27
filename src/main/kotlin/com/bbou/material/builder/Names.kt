@@ -2,7 +2,9 @@ package com.bbou.material.builder
 
 import com.materialkolor.hct.Cam16
 import com.materialkolor.hct.Hct
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 fun findCSSName(colorInt: Int): Pair<String, Int?> = ColorNameFinder(CSS_COLOR_MAP).findName(colorInt)
 
@@ -19,7 +21,16 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
     }
 
     fun findName(targetInt: Int): Pair<String, Int?> {
-        // 1. Check for an exact hex match first
+        return findNameCartesianWeighed(targetInt, lightnessWeight = 1.0, redGreenWeight = 2.0, yellowBlueWeight = 2.0)
+    }
+
+    fun findNameCartesianWeighed(
+        targetInt: Int,
+        lightnessWeight: Double = 1.0,
+        redGreenWeight: Double = 1.0,
+        yellowBlueWeight: Double = 1.0
+    ): Pair<String, Int?> {
+        // Check for an exact hex match first
         colorMap[targetInt]?.let { return it to targetInt }
 
         // Convert target to Cartesian coordinates for the "Color Plane" for stable distance math
@@ -27,17 +38,17 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
         val targetA = targetCam.chroma * cos(Math.toRadians(targetCam.hue))
         val targetB = targetCam.chroma * sin(Math.toRadians(targetCam.hue))
 
-        val closest = colorMap.minByOrNull { (colorInt, _) ->
-            val refCam = Cam16.fromInt(colorInt)
+        val closest = colorMap.minByOrNull { (candidateInt, _) ->
+            val candidateCam = Cam16.fromInt(candidateInt)
 
             // Convert candidate to Cartesian
-            val refA = refCam.chroma * cos(Math.toRadians(refCam.hue))
-            val refB = refCam.chroma * sin(Math.toRadians(refCam.hue))
+            val refA = candidateCam.chroma * cos(Math.toRadians(candidateCam.hue))
+            val refB = candidateCam.chroma * sin(Math.toRadians(candidateCam.hue))
 
-            // Standard Perceptual Weighting:
-            val dJ = (targetCam.j - refCam.j) * 1.0  // Lightness often weighted more heavily for "identity"
-            val dA = (targetA - refA) * 2.0          // Red-Green (Weighted higher)
-            val dB = (targetB - refB) * 2.0          // Yellow-Blue (Weighted higher)
+            // Weighed Perceptual Weighting:
+            val dJ = (targetCam.j - candidateCam.j) * lightnessWeight // Lightness often weighted more heavily for "identity"
+            val dA = (targetA - refA) * redGreenWeight          // Red-Green (Weighted higher)
+            val dB = (targetB - refB) * yellowBlueWeight        // Yellow-Blue (Weighted higher)
 
             // Calculate Euclidean distance
             (dJ * dJ) + (dA * dA) + (dB * dB)
@@ -45,52 +56,61 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
         return (closest?.value ?: "Unknown Color") to closest?.key
     }
 
-    fun findName3(targetInt: Int): Pair<String, Int?> {
-        // 1. Check for an exact hex match first
+    fun findNameByUCSDistance(
+        targetInt: Int,
+        hueWeight: Double = 2.0,
+        chromaWeight: Double = 1.0,
+        lightnessWeight: Double = 1.0,
+    ): Pair<String, Int?> {
+        // Check for an exact hex match first
         colorMap[targetInt]?.let { return it to targetInt }
 
         // Convert target to Cartesian coordinates for the "Color Plane" for stable distance math
         val targetCam = Cam16.fromInt(targetInt)
-        val targetA = targetCam.chroma * cos(Math.toRadians(targetCam.hue))
-        val targetB = targetCam.chroma * sin(Math.toRadians(targetCam.hue))
 
-        val closest = colorMap.minByOrNull { (colorInt, _) ->
-            val refCam = Cam16.fromInt(colorInt)
+        val closest = colorMap.minByOrNull { (candidateInt, _) ->
+            val candidateCam = Cam16.fromInt(candidateInt)
 
-            // Convert candidate to Cartesian
-            val refA = refCam.chroma * cos(Math.toRadians(refCam.hue))
-            val refB = refCam.chroma * sin(Math.toRadians(refCam.hue))
+            // 1. Calculate Hue difference with wrap-around fix
+            val rawHueDiff = abs(targetCam.hue - candidateCam.hue)
+            val hueDiff = if (rawHueDiff > 180.0) 360.0 - rawHueDiff else rawHueDiff         // Convert candidate to Cartesian
 
-            // Standard Perceptual Weighting:
-            val dJ = (targetCam.j - refCam.j) * 1.0  // Lightness often weighted more heavily for "identity"
-            val dA = (targetA - refA) * 1.0          // Red-Green
-            val dB = (targetB - refB) * 1.0          // Yellow-Blue
+            // Distance
+            val dH = hueDiff * hueWeight
+            val dC = (targetCam.chroma - candidateCam.chroma) * chromaWeight
+            val dJ = (targetCam.j - candidateCam.j) * lightnessWeight // Lightness often weighted more heavily for "identity"
 
-            // Calculate Euclidean distance
-            (dJ * dJ) + (dA * dA) + (dB * dB)
+            // Calculate Euclidean distance squared
+            (dH * dH) + (dC * dC) + (dJ * dJ)
         }
         return (closest?.value ?: "Unknown Color") to closest?.key
     }
 
-    fun findPerceptualName(targetInt: Int): Pair<String, Int?> {
-        // 1. Direct hit check
+    fun findNameByHCSDistance(
+        targetInt: Int,
+        hueWeight: Double = 1.0,
+        chromaWeight: Double = 1.0,
+        lightnessWeight: Double = 2.0
+    ): Pair<String, Int?> {
+
+        // Direct hit check
         colorMap[targetInt]?.let { return it to targetInt }
 
         val targetCam = Cam16.fromInt(targetInt)
 
-        val closest = colorMap.entries.minByOrNull { entry ->
-            val colorCam = Cam16.fromInt(entry.key)
+        val closest = colorMap.entries.minByOrNull { (candidateInt, _) ->
+            val candidateCam = Cam16.fromInt(candidateInt)
 
-            // Circular Hue Difference (0-180 range)
-            val rawHueDiff = abs(targetCam.hue - colorCam.hue)
+            // Circular Hue Difference with wrap-around fix (0-180 range)
+            val rawHueDiff = abs(targetCam.hue - candidateCam.hue)
             val hueDiff = if (rawHueDiff > 180.0) 360.0 - rawHueDiff else rawHueDiff
 
-            // WEIGHTED DISTANCE
-            // We multiply Hue by 2.0 because a wrong hue is a much bigger
-            // "error" than a slightly wrong brightness or saturation.
-            val dH = hueDiff * 2.0
-            val dC = targetCam.chroma - colorCam.chroma
-            val dJ = targetCam.j - colorCam.j
+            // Distance
+            // We weight Hue heavily (2.0) to stop the "Yellow -> Green" jump.
+            // We weight J (Lightness) and C (Chroma) lower.
+            val dH = hueDiff * hueWeight
+            val dC = (targetCam.chroma - candidateCam.chroma) * chromaWeight
+            val dJ = (targetCam.j - candidateCam.j) * lightnessWeight
 
             // Using squared distance (skipping sqrt for speed)
             (dH * dH) + (dC * dC) + (dJ * dJ)
@@ -98,12 +118,17 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
         return (closest?.value ?: "Unknown Color") to closest?.key
     }
 
-    fun findName2(targetInt: Int): Pair<String, Int?> {
+    fun findNameByHCTDistance(
+        targetInt: Int,
+        hueWeight: Double = 1.0,
+        chromaWeight: Double = 1.0,
+        toneWeight: Double = 2.0
+    ): Pair<String, Int?> {
 
-        // 1. Direct hit check
+        // Direct hit check
         colorMap[targetInt]?.let { return it to targetInt }
 
-        // 2. Perceptual closest match
+        // Perceptual closest match
         val targetHct = Hct.fromInt(targetInt)
         val closest = colorMap.entries.minByOrNull {
             val colorHct = colorHcts[it.key]!!
@@ -111,15 +136,19 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
             //if (colorHct != colorHct2)
             //    throw IllegalStateException("$colorHct != colorHct2")
 
-            // Circular Hue Difference
+            // Circular Hue Difference with wrap-around fix (0-180 range)
             val rawHueDiff = abs(targetHct.hue - colorHct.hue)
             val hueDiff = if (rawHueDiff > 180.0) 360.0 - rawHueDiff else rawHueDiff
-            val chromaDiff = targetHct.chroma - colorHct.chroma
-            val toneDiff = targetHct.tone - colorHct.tone
-            val toneWeight = 2.0
+
+            // Distance
+            val dH = hueDiff * hueWeight
+            val dC = (targetHct.chroma - colorHct.chroma) * chromaWeight
+            val dT = (targetHct.tone - colorHct.tone) * toneWeight
 
             // Calculate perceptual distance (the lower the value, the closer the color)
-            sqrt(hueDiff.pow(2) + chromaDiff.pow(2) + toneDiff.pow(2) * toneWeight)
+            // Euclidean distance in 3D HCT space
+            // Using squared distance (skipping sqrt for speed)
+            (dH * dH) + (dC * dC) + (dT * dT)
         }
         // closest?.let { println("${targetInt.toColorString()} ${it.key.toColorString()} ${it.value}") }
         closest?.let { return it.value to it.key }
@@ -139,8 +168,14 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
                 val x11 = "${valueX11?.toColorString()},$nameX11"
                 val gpick = "${valueGPick?.toColorString()},$nameGPick"
                 val resene = "${valueResene?.toColorString()},$nameResene"
-                println("${it.toColorString()} ${descriptive.padEnd(25)} -> CSS = ${css.padEnd(25)}, X11 = ${x11.padEnd(25)}, GPICK = ${gpick.padEnd(25)}, RESENE = ${resene.padEnd(25)}")
-             }
+                println(
+                    "${it.toColorString()} ${descriptive.padEnd(25)} -> CSS = ${css.padEnd(25)}, X11 = ${x11.padEnd(25)}, GPICK = ${gpick.padEnd(25)}, RESENE = ${
+                        resene.padEnd(
+                            25
+                        )
+                    }"
+                )
+            }
         }
 
         fun Int.toDescriptiveName(): String {
