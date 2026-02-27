@@ -21,14 +21,21 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
     }
 
     fun findName(targetInt: Int): Pair<String, Int?> {
-        return findNameCartesianWeighed(targetInt, lightnessWeight = 1.0, redGreenWeight = 2.0, yellowBlueWeight = 2.0)
+        return findNameByUCSDistanceWithCartesianCoordinates(targetInt, lightnessWeight = 1.0, redGreenWeight = 2.0, yellowBlueWeight = 2.0)
     }
 
-    fun findNameCartesianWeighed(
+    // The Cam16 values used (J, C, h) are polar coordinates.
+    // Using a standard Euclidean formula (a2+b2+c2) on polar coordinates is mathematically "incorrect"
+    // for finding distance because the "width" of a hue degree changes depending on how much chroma
+    // there is.
+    // (Think of it like longitudes on a globe: 1∘ at the equator is a huge distance,
+    // but 1∘ at the North Pole is nearly zero).
+    // Solution use Cartesian Coordinates (a,b)
+    fun findNameByUCSDistanceWithCartesianCoordinates(
         targetInt: Int,
-        lightnessWeight: Double = 1.0,
-        redGreenWeight: Double = 1.0,
-        yellowBlueWeight: Double = 1.0
+        redGreenWeight: Double = 2.0,
+        yellowBlueWeight: Double = 2.0,
+        lightnessWeight: Double = 1.0
     ): Pair<String, Int?> {
         // Check for an exact hex match first
         colorMap[targetInt]?.let { return it to targetInt }
@@ -42,13 +49,13 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
             val candidateCam = Cam16.fromInt(candidateInt)
 
             // Convert candidate to Cartesian
-            val refA = candidateCam.chroma * cos(Math.toRadians(candidateCam.hue))
-            val refB = candidateCam.chroma * sin(Math.toRadians(candidateCam.hue))
+            val candidateA = candidateCam.chroma * cos(Math.toRadians(candidateCam.hue))
+            val candidateB = candidateCam.chroma * sin(Math.toRadians(candidateCam.hue))
 
-            // Weighed Perceptual Weighting:
+            // Weighed Perceptual Weighting
+            val dA = (targetA - candidateA) * redGreenWeight          // Red-Green (Weighted higher)
+            val dB = (targetB - candidateB) * yellowBlueWeight        // Yellow-Blue (Weighted higher)
             val dJ = (targetCam.j - candidateCam.j) * lightnessWeight // Lightness often weighted more heavily for "identity"
-            val dA = (targetA - refA) * redGreenWeight          // Red-Green (Weighted higher)
-            val dB = (targetB - refB) * yellowBlueWeight        // Yellow-Blue (Weighted higher)
 
             // Calculate Euclidean distance
             (dJ * dJ) + (dA * dA) + (dB * dB)
@@ -56,41 +63,12 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
         return (closest?.value ?: "Unknown Color") to closest?.key
     }
 
-    fun findNameByUCSDistance(
+    // The Cam16 values used (J, C, h) are polar coordinates.
+    fun findNameByUCSDistanceWithPolarCoordinates(
         targetInt: Int,
         hueWeight: Double = 2.0,
         chromaWeight: Double = 1.0,
-        lightnessWeight: Double = 1.0,
-    ): Pair<String, Int?> {
-        // Check for an exact hex match first
-        colorMap[targetInt]?.let { return it to targetInt }
-
-        // Convert target to Cartesian coordinates for the "Color Plane" for stable distance math
-        val targetCam = Cam16.fromInt(targetInt)
-
-        val closest = colorMap.minByOrNull { (candidateInt, _) ->
-            val candidateCam = Cam16.fromInt(candidateInt)
-
-            // 1. Calculate Hue difference with wrap-around fix
-            val rawHueDiff = abs(targetCam.hue - candidateCam.hue)
-            val hueDiff = if (rawHueDiff > 180.0) 360.0 - rawHueDiff else rawHueDiff         // Convert candidate to Cartesian
-
-            // Distance
-            val dH = hueDiff * hueWeight
-            val dC = (targetCam.chroma - candidateCam.chroma) * chromaWeight
-            val dJ = (targetCam.j - candidateCam.j) * lightnessWeight // Lightness often weighted more heavily for "identity"
-
-            // Calculate Euclidean distance squared
-            (dH * dH) + (dC * dC) + (dJ * dJ)
-        }
-        return (closest?.value ?: "Unknown Color") to closest?.key
-    }
-
-    fun findNameByHCSDistance(
-        targetInt: Int,
-        hueWeight: Double = 1.0,
-        chromaWeight: Double = 1.0,
-        lightnessWeight: Double = 2.0
+        lightnessWeight: Double = 0.5
     ): Pair<String, Int?> {
 
         // Direct hit check
