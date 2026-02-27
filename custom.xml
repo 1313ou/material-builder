@@ -1,0 +1,17 @@
+<resources>
+
+    <color name="colorCustomColor1">#666018</color>                                 <!-- Tone 40 Chroma: 34.5 -->
+    <color name="colorCustomColor1Container">#FFF59D</color>                        <!-- Tone 95 Chroma: 34.5 -->
+    <color name="colorCustomColor1Container_highContrast">#504A01</color>           <!-- Tone 30 Chroma: 34.5 -->
+    <color name="colorCustomColor1Container_mediumContrast">#766F26</color>         <!-- Tone 45 Chroma: 34.5 -->
+    <color name="colorCustomColor1_highContrast">#312D00</color>                    <!-- Tone 18 Chroma: 26 -->
+    <color name="colorCustomColor1_mediumContrast">#3C3700</color>                  <!-- Tone 22 Chroma: 29 -->
+
+    <color name="colorOnCustomColor1">#FFFFFF</color>
+    <color name="colorOnCustomColor1Container">#777027</color>
+    <color name="colorOnCustomColor1Container_highContrast">#FFFFFF</color>
+    <color name="colorOnCustomColor1Container_mediumContrast">#FFFFFF</color>
+    <color name="colorOnCustomColor1_highContrast">#FFFFFF</color>
+    <color name="colorOnCustomColor1_mediumContrast">#FFFFFF</color>
+
+</resources>

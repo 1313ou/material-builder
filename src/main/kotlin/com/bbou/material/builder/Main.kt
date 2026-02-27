@@ -1,5 +1,6 @@
 package com.bbou.material.builder
 
+import com.bbou.material.builder.Search.findHashColors
 import kotlinx.cli.*
 import java.io.File
 
@@ -7,9 +8,10 @@ fun main(args: Array<String>) {
     val parser = ArgParser("material-builder")
 
     // Options (start with - or --)
-    val operation by parser.option(ArgType.String, shortName = "o", description = "Operation").required()
-    val file by parser.option(ArgType.String, shortName = "i", description = "Input file")
-    val full by parser.option(ArgType.Boolean, shortName = "f", description = "Full output").default(false)
+    val operation by parser.option(ArgType.String, shortName = "o", fullName = "operation", description = "Operation").required()
+    val file by parser.option(ArgType.String, shortName = "i", fullName = "input", description = "Input file")
+    val scrape by parser.option(ArgType.Boolean, shortName = "s", fullName = "scrape", description = "Scrape color expressions").default(false)
+    val full by parser.option(ArgType.Boolean, shortName = "f", fullName = "full", description = "Full output").default(false)
 
     // Positional Argument (no prefix)
     // vararg() to collect "everything else" into a List
@@ -21,9 +23,12 @@ fun main(args: Array<String>) {
     System.err.println("arguments: $data")
     val args2 = file?.let {
         val data0 = data
-        data = fromFile(it)
+        data = if (scrape) fromFileText(it) else fromFileFields(it)
         System.err.println("arguments from file: $data")
         data0
+    }
+    if (scrape) {
+        data= findHashColors(data.joinToString( separator = "\n" ))
     }
 
     when (operation) {
@@ -100,9 +105,18 @@ fun main(args: Array<String>) {
     }
 }
 
-fun fromFile(filePath: String): List<String> {
+fun fromFileText(filePath: String): List<String> {
     return File(filePath).useLines { lines ->
-        lines.map { it.takeWhile({ c: Char -> !c.isWhitespace() }) }.toList()
+        lines
+            .toList()
+    }
+}
+
+fun fromFileFields(filePath: String): List<String> {
+    return File(filePath).useLines { lines ->
+        lines
+            .map { it.takeWhile({ c: Char -> !c.isWhitespace() }) }
+            .toList()
     }
 }
 
