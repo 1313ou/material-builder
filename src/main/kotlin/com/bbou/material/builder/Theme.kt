@@ -6,7 +6,7 @@ import com.materialkolor.scheme.SchemeContent
 
 // C O L O R   M A P   B Y   R O L E
 
-private fun fromPalette(tone: Int, palette: TonalPalette): String = palette.tone(tone).toToneString()
+private fun fromPalette(tone: Int, palette: TonalPalette): String = palette.tone(tone = tone).toToneString()
 
 private fun fromScheme(role: String, scheme: SchemeContent): String = getSchemeColor(scheme, role).toToneString()
 

@@ -65,12 +65,17 @@ fun main(args: Array<String>) {
 
         "hct" -> {
             val dataInt = data.map { it.toColorInt() }.toIntArray()
-            hct(*dataInt)
+            printHct(*dataInt)
+        }
+
+        "tone40", "main" -> {
+            val dataInt = data.map { it.toColorInt() }.toIntArray()
+            printColorToneOf(*dataInt, tone = 40)
         }
 
         "name" -> {
             val dataInt = data.map { it.toColorInt() }.toIntArray()
-            ColorNameFinder.Companion.name(*dataInt)
+            ColorNameFinder.name(*dataInt)
         }
 
         "html" -> {
@@ -78,14 +83,14 @@ fun main(args: Array<String>) {
         }
 
         "palette" -> {
-            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) fileArgs!![0].toInt() else 0
+            val index = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
             val seedHex = data[index]
             val seedInput = seedHex.toColorInt()
             palette(seedInput)
         }
 
         "derive" -> {
-            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) fileArgs!![0].toInt() else 0
+            val index = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
             val primaryHex = data[index]
             println("From $primaryHex")
             val primaryInput = primaryHex.toColorInt()
@@ -153,10 +158,9 @@ fun fromFileFields(filePath: String): List<String> {
     }
 }
 
-fun printDeriveOfficialM3Colors(primaryInput: Int, tone: Int = 40): Triple<Int, Int, Int> {
-    val accents = deriveOfficialM3Colors(primaryInput, tone)
-    printAccentColors(accents, tone)
-    return accents
+fun printDeriveOfficialM3Colors(primaryInput: Int, tone: Int = 40) {
+    val accents = deriveOfficialM3Colors(primaryInput, tone = tone)
+    printAccentColors(accents, tone = tone)
 }
 
 fun printAccentColors(accents: Triple<Int, Int, Int>, tone: Int = 40) {

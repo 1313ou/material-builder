@@ -53,25 +53,52 @@ private fun Hct.toToneString(): String = "T:${this.tone.toToneString()}"
 private fun Hct.toHueChromaToneString(): String = "${this.toHueChromaString()} ${this.toToneString()}"
 
 /**
- * Express colors in HCT space
+ * Print colors in HCT space
  *
  * @param colorInputs colors
  */
-fun hct(vararg colorInputs: Int) {
+fun printHct(vararg colorInputs: Int) {
     println("| Hex    | Hue    | Chroma | Tone   |")
     println("|-----------------------------------| ")
-    colorInputs.forEach {
-        val hex = it.toColorString()
-        val hct = Hct.fromInt(it)
-        val hue = hct.hue.toHueString()
-        val chroma = hct.chroma.toChromaString()
-        val tone = hct.tone.toToneString()
+    colorInputs.zip(hct(*colorInputs)).forEach { (c, hct) ->
+        val hex = c.toColorString()
+        val (hue, chroma, tone) = hct
         println("|${hex.padEnd(8)}|${hue.padEnd(8)}|${chroma.padEnd(8)}|${tone.padEnd(8)}|")
     }
 }
 
 /**
- * Generate tone forty of
+ * Express colors in HCT space
+ *
+ * @param colorInputs colors
+ */
+fun hct(vararg colorInputs: Int): List<Triple<String, String, String>> {
+    return colorInputs.map {
+        val hct = Hct.fromInt(it)
+        val hue = hct.hue.toHueString()
+        val chroma = hct.chroma.toChromaString()
+        val tone = hct.tone.toToneString()
+        Triple(hue, chroma, tone)
+    }.toList()
+}
+
+/**
+ * Print tone (40) of
+ *
+ * @param colorInputs colors
+ */
+fun printColorToneOf(vararg colorInputs: Int, tone: Int = 40) {
+    println("| Hex     | Tone${tone.toString().padEnd(2)}  |")
+    println("|-------------------| ")
+    colorInputs.zip(toneOf(*colorInputs, tone = tone)).forEach { (c, c2) ->
+        val hex = c.toColorString()
+        val hex2 = c2.toColorString()
+        println("| ${hex.padEnd(8)}| ${hex2.padEnd(8)}|")
+    }
+}
+
+/**
+ * Generate tone (40) of
  *
  * @param colorInputs colors
  */
