@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: com.bbou.MainKt
+Main-Class: com.bbou.material.builder.MainKt
