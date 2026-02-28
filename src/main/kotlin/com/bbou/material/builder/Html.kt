@@ -25,14 +25,25 @@ const val colorTemplate = "<tr><td>%LABEL%</td><td><div style=\"background-color
 const val colorTemplate2 =
     "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 
+fun printHtmlColors(colors: Map<String, String>) {
+    println(toHtml(colors))
+}
+
+fun printHtmlColors(colors: List<String>) {
+    println(toHtml(colors))
+}
+
 fun printHtmlColors(lightColors: Map<String, String>, darkColors: Map<String, String>) {
     //println(toHtml(lightColors))
     //println(toHtml(darkColors))
-    println(toHtml(lightColors, darkColors))
+    println(toHtml2(lightColors, darkColors))
 }
 
-private fun Int.isLight(): Boolean {
-    return Hct.fromInt(this).tone > 50.0
+fun toHtml(colors: List<String>): String {
+    val map = colors
+        .map { it to it }
+        .toMap()
+    return toHtml(map)
 }
 
 fun toHtml(colors: Map<String, String>): String {
@@ -49,10 +60,10 @@ fun toHtml(colors: Map<String, String>): String {
     return template.replace("%COLORS%", colorsDiv)
 }
 
-fun toHtml(lightColors: Map<String, String>, darkColors: Map<String, String>): String {
-    val colorsDiv = lightColors.keys.joinToString(separator = "\n") {
-        val lightValue = lightColors[it]!!
-        val darkValue = darkColors[it]!!
+fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>): String {
+    val colorsDiv = colors1.keys.joinToString(separator = "\n") {
+        val lightValue = colors1[it]!!
+        val darkValue = colors2[it]!!
         val lightForeground = if (lightValue.toColorInt().isLight()) "#000000" else "#FFFFFF"
         val darkForeground = if (lightValue.toColorInt().isLight()) "#000000" else "#FFFFFF"
         colorTemplate2
@@ -65,4 +76,9 @@ fun toHtml(lightColors: Map<String, String>, darkColors: Map<String, String>): S
             .replace("%DFOREGROUND%", darkForeground)
     }
     return template.replace("%COLORS%", colorsDiv)
+
+}
+
+private fun Int.isLight(): Boolean {
+    return Hct.fromInt(this).tone > 50.0
 }

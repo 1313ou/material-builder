@@ -49,3 +49,5 @@ bin/
 *.html
 *.jar
 *.gpa
+output/
+input/

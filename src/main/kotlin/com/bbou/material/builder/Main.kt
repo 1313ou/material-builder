@@ -1,6 +1,8 @@
 package com.bbou.material.builder
 
 import com.bbou.material.builder.Search.findHashColors
+import com.bbou.material.builder.Search.findRgbColors
+import com.bbou.material.builder.Search.findXColors
 import kotlinx.cli.*
 import java.io.File
 
@@ -9,31 +11,56 @@ fun main(args: Array<String>) {
 
     // Options (start with - or --)
     val operation by parser.option(ArgType.String, shortName = "o", fullName = "operation", description = "Operation").required()
-    val file by parser.option(ArgType.String, shortName = "f", fullName = "file", description = "Input file")
+    val text by parser.option(ArgType.String, shortName = "t", fullName = "text", description = "Unparsed Input file")
+    val file by parser.option(ArgType.String, shortName = "f", fullName = "file", description = "Parsed Input file (field extracted)")
     val scrape by parser.option(ArgType.Boolean, shortName = "s", fullName = "scrape", description = "Scrape color expressions").default(false)
     val full by parser.option(ArgType.Boolean, shortName = "x", fullName = "full", description = "Full output").default(false)
+    val verbose by parser.option(ArgType.Boolean, shortName = "v", fullName = "verbose", description = "Verbose output").default(true)
 
     // Positional Argument (no prefix)
     // vararg() to collect "everything else" into a List
     var data: List<String> by parser.argument(ArgType.String, description = "Inputs (or parameters)").vararg().optional()
 
     parser.parse(args)
-    System.err.println("operation: $operation")
-    System.err.println("input: $file")
-    System.err.println("arguments: $data")
-    val args2 = file?.let {
+    if (verbose) {
+        System.err.println("operation: $operation")
+        System.err.println("text: $text")
+        System.err.println("file: $file")
+        System.err.println("arguments: $data")
+    }
+
+    val textArgs = text?.let {
         val data0 = data
-        data = if (scrape) fromFileText(it) else fromFileFields(it)
-        System.err.println("arguments from file: $data")
+        data = fromFileText(it)
+        if (verbose) System.err.println("arguments from file: $data")
         data0
     }
+    val fileArgs = file?.let {
+        val data0 = data
+        data = fromFileFields(it)
+        if (verbose) System.err.println("arguments from file: $data")
+        data0
+    }
+
     if (scrape) {
-        data= findHashColors(data.joinToString( separator = "\n" ))
+        data = findHashColors(data.joinToString(separator = "\n"))
     }
 
     when (operation) {
-        "info" -> {
+        "args" -> {
             println(data)
+        }
+
+        "scrape" -> {
+            println(findHashColors(data.joinToString(separator = "\n")))
+        }
+
+        "scrapex" -> {
+            println(findXColors(data.joinToString(separator = "\n")))
+        }
+
+        "scrapergb" -> {
+            println(findRgbColors(data.joinToString(separator = "\n")))
         }
 
         "hct" -> {
@@ -46,11 +73,23 @@ fun main(args: Array<String>) {
             ColorNameFinder.Companion.name(*dataInt)
         }
 
+        "html" -> {
+            printHtmlColors(data)
+        }
+
         "palette" -> {
-            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) args2!![0].toInt() else 0
+            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) fileArgs!![0].toInt() else 0
             val seedHex = data[index]
             val seedInput = seedHex.toColorInt()
             palette(seedInput)
+        }
+
+        "derive" -> {
+            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) fileArgs!![0].toInt() else 0
+            val primaryHex = data[index]
+            println("From $primaryHex")
+            val primaryInput = primaryHex.toColorInt()
+            printDeriveOfficialM3Colors(primaryInput)
         }
 
         "surface_primary" -> {
@@ -71,14 +110,6 @@ fun main(args: Array<String>) {
             generateVibrantSurfaceTheme(surfaceInput, primaryInput, true)
         }
 
-        "derive" -> {
-            val index = if (!file.isNullOrEmpty() && args.isNotEmpty()) args2!![0].toInt() else 0
-            val primaryHex = data[index]
-            println("From $primaryHex")
-            val primaryInput = primaryHex.toColorInt()
-            printDeriveOfficialM3Colors(primaryInput)
-        }
-
         "surface" -> {
             val surfaceHex = data[0]
             val primaryHex = data[1]
@@ -95,13 +126,15 @@ fun main(args: Array<String>) {
             printXmlThemeColors(data, full = full)
         }
 
-        "html" -> {
+        "themehtml" -> {
             printHtmlThemeColors(data, full = full)
         }
 
-        "text" -> {
+        "themetext" -> {
             printTextThemeColors(data, full = full)
         }
+
+        else -> throw IllegalArgumentException(operation)
     }
 }
 
