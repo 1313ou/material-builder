@@ -35,6 +35,7 @@ fun main(args: Array<String>) {
         if (verbose) System.err.println("arguments from file: $data")
         data0
     }
+
     val fileArgs = file?.let {
         val data0 = data
         data = fromFileFields(it)
@@ -52,15 +53,15 @@ fun main(args: Array<String>) {
         }
 
         "scrape" -> {
-            println(findHashColors(data.joinToString(separator = "\n")))
+           findHashColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
         "scrapex" -> {
-            println(findXColors(data.joinToString(separator = "\n")))
+            findXColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
         "scrapergb" -> {
-            println(findRgbColors(data.joinToString(separator = "\n")))
+            findRgbColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
         "hct" -> {
