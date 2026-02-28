@@ -15,6 +15,26 @@ val accentRoleDefs = mapOf(
     "primaryFixedDim" to Triple(80, 80, 1),
     "onPrimaryFixedVariant" to Triple(30, 30, 1),
 
+    "secondary" to Triple(40, 80, 2),
+    "onSecondary" to Triple(100, 20, 2),
+    "secondaryContainer" to Triple(90, 30, 2),
+    "onSecondaryContainer" to Triple(10, 90, 2),
+    "secondaryFixed" to Triple(90, 90, 2),
+    "onSecondaryFixed" to Triple(10, 10, 2),
+    "secondaryFixedDim" to Triple(80, 80, 2),
+    "onSecondaryFixedVariant" to Triple(30, 30, 2),
+
+    "tertiary" to Triple(40, 80, 3),
+    "onTertiary" to Triple(100, 20, 3),
+    "tertiaryContainer" to Triple(90, 30, 3),
+    "onTertiaryContainer" to Triple(10, 90, 3),
+    "tertiaryFixed" to Triple(90, 90, 3),
+    "onTertiaryFixed" to Triple(10, 10, 3),
+    "tertiaryFixedDim" to Triple(80, 80, 3),
+    "onTertiaryFixedVariant" to Triple(30, 30, 3),
+)
+
+val accentRoleMediumContrastDefs = mapOf(
     "inversePrimary_mediumContrast" to Triple(80, 40, 1),
     "primary_mediumContrast" to Triple(26, 90, 1),
     "onPrimary_mediumContrast" to Triple(100, 0, 1),
@@ -25,6 +45,26 @@ val accentRoleDefs = mapOf(
     "primaryFixedDim_mediumContrast" to Triple(58, 58, 1),
     "onPrimaryFixedVariant_mediumContrast" to Triple(10, 10, 1),
 
+    "secondary_mediumContrast" to Triple(26, 90, 2),
+    "onSecondary_mediumContrast" to Triple(100, 0, 2),
+    "secondaryContainer_mediumContrast" to Triple(54, 54, 2),
+    "onSecondaryContainer_mediumContrast" to Triple(0, 100, 2),
+    "secondaryFixed_mediumContrast" to Triple(74, 74, 2),
+    "onSecondaryFixed_mediumContrast" to Triple(0, 0, 2),
+    "secondaryFixedDim_mediumContrast" to Triple(58, 58, 2),
+    "onSecondaryFixedVariant_mediumContrast" to Triple(10, 10, 2),
+
+    "tertiary_mediumContrast" to Triple(2, 90, 3),
+    "onTertiary_mediumContrast" to Triple(100, 0, 3),
+    "tertiaryContainer_mediumContrast" to Triple(54, 54, 3),
+    "onTertiaryContainer_mediumContrast" to Triple(0, 100, 3),
+    "tertiaryFixed_mediumContrast" to Triple(74, 74, 3),
+    "onTertiaryFixed_mediumContrast" to Triple(0, 0, 3),
+    "tertiaryFixedDim_mediumContrast" to Triple(58, 58, 3),
+    "onTertiaryFixedVariant_mediumContrast" to Triple(10, 10, 3),
+)
+
+val accentRoleHighContrastDefs = mapOf(
     "inversePrimary_highContrast" to Triple(90, 20, 1),
     "primary_highContrast" to Triple(0, 100, 1),
     "onPrimary_highContrast" to Triple(100, 0, 1),
@@ -35,24 +75,6 @@ val accentRoleDefs = mapOf(
     "primaryFixedDim_highContrast" to Triple(36, 36, 1),
     "onPrimaryFixedVariant_highContrast" to Triple(0, 0, 1),
 
-    "secondary" to Triple(40, 80, 2),
-    "onSecondary" to Triple(100, 20, 2),
-    "secondaryContainer" to Triple(90, 30, 2),
-    "onSecondaryContainer" to Triple(10, 90, 2),
-    "secondaryFixed" to Triple(90, 90, 2),
-    "onSecondaryFixed" to Triple(10, 10, 2),
-    "secondaryFixedDim" to Triple(80, 80, 2),
-    "onSecondaryFixedVariant" to Triple(30, 30, 2),
-
-    "secondary_mediumContrast" to Triple(26, 90, 2),
-    "onSecondary_mediumContrast" to Triple(100, 0, 2),
-    "secondaryContainer_mediumContrast" to Triple(54, 54, 2),
-    "onSecondaryContainer_mediumContrast" to Triple(0, 100, 2),
-    "secondaryFixed_mediumContrast" to Triple(74, 74, 2),
-    "onSecondaryFixed_mediumContrast" to Triple(0, 0, 2),
-    "secondaryFixedDim_mediumContrast" to Triple(58, 58, 2),
-    "onSecondaryFixedVariant_mediumContrast" to Triple(10, 10, 2),
-
     "secondary_highContrast" to Triple(0, 100, 2),
     "onSecondary_highContrast" to Triple(100, 0, 2),
     "secondaryContainer_highContrast" to Triple(36, 74, 2),
@@ -61,24 +83,6 @@ val accentRoleDefs = mapOf(
     "onSecondaryFixed_highContrast" to Triple(100, 100, 2),
     "secondaryFixedDim_highContrast" to Triple(36, 36, 2),
     "onSecondaryFixedVariant_highContrast" to Triple(0, 0, 2),
-
-    "tertiary" to Triple(40, 80, 3),
-    "onTertiary" to Triple(100, 20, 3),
-    "tertiaryContainer" to Triple(90, 30, 3),
-    "onTertiaryContainer" to Triple(10, 90, 3),
-    "tertiaryFixed" to Triple(90, 90, 3),
-    "onTertiaryFixed" to Triple(10, 10, 3),
-    "tertiaryFixedDim" to Triple(80, 80, 3),
-    "onTertiaryFixedVariant" to Triple(30, 30, 3),
-
-    "tertiary_mediumContrast" to Triple(2, 90, 3),
-    "onTertiary_mediumContrast" to Triple(100, 0, 3),
-    "tertiaryContainer_mediumContrast" to Triple(54, 54, 3),
-    "onTertiaryContainer_mediumContrast" to Triple(0, 100, 3),
-    "tertiaryFixed_mediumContrast" to Triple(74, 74, 3),
-    "onTertiaryFixed_mediumContrast" to Triple(0, 0, 3),
-    "tertiaryFixedDim_mediumContrast" to Triple(58, 58, 3),
-    "onTertiaryFixedVariant_mediumContrast" to Triple(10, 10, 3),
 
     "tertiary_highContrast" to Triple(0, 100, 3),
     "onTertiary_highContrast" to Triple(100, 0, 3),
@@ -91,6 +95,10 @@ val accentRoleDefs = mapOf(
 )
 
 val accentRoles = accentRoleDefs.keys.toList()
+
+val accentRolesMediumContrast = accentRoleMediumContrastDefs.keys.toList()
+
+val accentRolesHighContrast = accentRoleHighContrastDefs.keys.toList()
 
 val primaryAccentRoles = listOf(
     "primary",
@@ -121,6 +129,7 @@ var accentRolesMin = primaryAccentRoles + secondaryAccentRoles + tertiaryAccentR
 val surfaceRoles = listOf(
     "surface",
     "onSurface",
+    "onSurface",
     "surfaceVariant",
     "onSurfaceVariant",
     "inverseSurface",
@@ -132,63 +141,19 @@ val surfaceRoles = listOf(
     "surfaceContainer",
     "surfaceContainerHigh",
     "surfaceContainerHighest",
-    "surface_mediumContrast",
-    "onSurface_mediumContrast",
-    "surfaceVariant_mediumContrast",
-    "onSurfaceVariant_mediumContrast",
-    "inverseSurface_mediumContrast",
-    "inverseOnSurface_mediumContrast",
-    "surfaceDim_mediumContrast",
-    "surfaceBright_mediumContrast",
-    "surfaceContainerLowest_mediumContrast",
-    "surfaceContainerLow_mediumContrast",
-    "surfaceContainer_mediumContrast",
-    "surfaceContainerHigh_mediumContrast",
-    "surfaceContainerHighest_mediumContrast",
-    "surface_highContrast",
-    "onSurface_highContrast",
-    "surfaceVariant_highContrast",
-    "onSurfaceVariant_highContrast",
-    "inverseSurface_highContrast",
-    "inverseOnSurface_highContrast",
-    "surfaceDim_highContrast",
-    "surfaceBright_highContrast",
-    "surfaceContainerLowest_highContrast",
-    "surfaceContainerLow_highContrast",
-    "surfaceContainer_highContrast",
-    "surfaceContainerHigh_highContrast",
-    "surfaceContainerHighest_highContrast",
 
     "background",
     "onBackground",
-    "background_mediumContrast",
-    "onBackground_mediumContrast",
-    "background_highContrast",
-    "onBackground_highContrast",
 
     "outline",
     "outlineVariant",
-    "outline_mediumContrast",
-    "outlineVariant_mediumContrast",
-    "outline_highContrast",
-    "outlineVariant_highContrast",
 
     "scrim",
-    "scrim_mediumContrast",
-    "scrim_highContrast",
 
     "error",
     "onError",
     "errorContainer",
     "onErrorContainer",
-    "error_mediumContrast",
-    "onError_mediumContrast",
-    "errorContainer_mediumContrast",
-    "onErrorContainer_mediumContrast",
-    "error_highContrast",
-    "onError_highContrast",
-    "errorContainer_highContrast",
-    "onErrorContainer_highContrast",
 )
 
 val surfaceRolesMin = listOf("surface", "onSurface", "surfaceContainer", "background", "outline")

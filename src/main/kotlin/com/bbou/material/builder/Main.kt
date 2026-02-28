@@ -142,8 +142,28 @@ fun main(args: Array<String>) {
             generateVibrantSurfaceTheme(surfaceInput, primaryInput, isDark = false)
         }
 
-        "theme" -> {
-            printDayNightM3ThemeXml()
+        "attrs" -> {
+            printAttrsXml()
+        }
+
+        "themeday" -> {
+            printNightM3ThemeXml()
+        }
+
+        "themenight" -> {
+            printDayM3ThemeXml()
+        }
+
+        "overlays" -> {
+            printDayNightM3OverlaysXml()
+        }
+
+        "overlaysday" -> {
+            printDayM3OverlaysXml()
+        }
+
+        "overlaysnight" -> {
+            printNightM3OverlaysXml()
         }
 
         "colors" -> {
