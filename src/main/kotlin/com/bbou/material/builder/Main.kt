@@ -15,7 +15,7 @@ fun main(args: Array<String>) {
     val file by parser.option(ArgType.String, shortName = "f", fullName = "file", description = "Parsed Input file (field extracted)")
     val scrape by parser.option(ArgType.Boolean, shortName = "s", fullName = "scrape", description = "Scrape color expressions").default(false)
     val full by parser.option(ArgType.Boolean, shortName = "x", fullName = "full", description = "Full output").default(false)
-    val verbose by parser.option(ArgType.Boolean, shortName = "v", fullName = "verbose", description = "Verbose output").default(true)
+    val verbose by parser.option(ArgType.Boolean, shortName = "v", fullName = "verbose", description = "Verbose output").default(false)
 
     // Positional Argument (no prefix)
     // vararg() to collect "everything else" into a List

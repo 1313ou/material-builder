@@ -121,7 +121,7 @@ fun palette(seedInput: Int) {
     val palette = TonalPalette.fromHct(seedHct)
 
     println("------------------------------------------------------------------------")
-    println("  ${seedInput.toColorString()} ${seedHct.toHueChromaToneString()})")
+    println("  ${seedInput.toColorString()} ${seedHct.toHueChromaToneString()}")
     println("------------------------------------------------------------------------")
     println("|Tone | Hex     | HCT                       | Use Case Suggestion      |")
     println("|----------------------------------------------------------------------|")
@@ -181,7 +181,7 @@ fun generateVibrantSurfacePaletteAndPrimary(surfaceInput: Int, primaryInput: Int
     // Primary
     val primary40 = toneOf(primaryInput)[0]
     println("\n--- PRIMARY (Tone 40) (Hint ${primaryInput.toColorString()} ${Hct.fromInt(primaryInput).toHueChromaToneString()}) ---\") ---")
-    println("Primary (tone 40): ${primary40.toColorString()}")
+    println("Primary (tone 40): ${primary40.toColorString()} ${Hct.fromInt(primary40).toHueChromaToneString()}")
 }
 
 /**
