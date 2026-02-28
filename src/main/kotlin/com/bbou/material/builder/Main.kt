@@ -172,7 +172,8 @@ fun printAccentColors(accents: Triple<Int, Int, Int>, tone: Int = 40) {
 
 fun printXmlThemeColors(args: List<String>, full: Boolean = false) {
     val (lightColors, darkColors) = generateThemeColors(args, full)
-    printXmlColors(lightColors, darkColors)
+    printXmlColors(lightColors, mode = "light")
+    printXmlColors(darkColors, mode = "dark")
 }
 
 fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {

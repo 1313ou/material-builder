@@ -52,6 +52,7 @@ fun generateDayNightM3XmlColors(
 
     // Light color map
     val lightMap = LinkedHashMap<String, String>()
+    lightMap["custom"] = surfaceInput.toColorString()
     // Add vibrant surface colors from the scheme
     surfaceRolesRange.forEach { role ->
         lightMap[role] = "#${fromScheme(role, lightScheme)}"
@@ -62,6 +63,7 @@ fun generateDayNightM3XmlColors(
     }
 
     val darkMap = LinkedHashMap<String, String>()
+    darkMap["custom"] = surfaceInput.toColorString()
     surfaceRolesRange.forEach { role ->
         darkMap[role] = "#${fromScheme(role, darkScheme)}"
     }
@@ -85,22 +87,22 @@ fun printTextColors(vararg maps: Map<String, String>) {
     }
 }
 
-fun printXmlColors(vararg maps: Map<String, String>) {
+fun printXmlColors(vararg maps: Map<String, String>, mode: String, colorPrefix: String="md_theme_") {
     maps.forEach {
         println("<resources>")
         it.forEach { (key, value) ->
-            println("\t<color name=\"$key\">$value</color>")
+            println("\t<color name=\"$colorPrefix${mode}_$key\">$value</color>")
         }
         println("</resources>")
     }
 }
 
-private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collection<String>) {
+private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collection<String>, colorPrefix: String="md_theme_") {
     val parent = "Theme.Material3.${mode.replaceFirstChar { it.uppercase() }}.NoActionBar"
     println("\n<style name=\"$themeName\" parent=\"$parent\">")
     rolesRange.forEach {
         val attr = "color${it.replaceFirstChar { it.uppercase() }}"
-        println("\t<item name=\"$attr\">@color/md_theme_${mode}_$it</item>")
+        println("\t<item name=\"$attr\">@color/$colorPrefix${mode}_$it</item>")
     }
     println("</style>\n")
 }
