@@ -53,7 +53,7 @@ fun main(args: Array<String>) {
         }
 
         "scrape" -> {
-           findHashColors(data.joinToString(separator = "\n")).forEach { println(it) }
+            findHashColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
         "scrapex" -> {
@@ -88,6 +88,24 @@ fun main(args: Array<String>) {
             val seedHex = data[index]
             val seedInput = seedHex.toColorInt()
             palette(seedInput)
+        }
+
+        "contrasts" -> {
+            val index = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
+            val colorHex = data[index]
+            val index2 = if (!fileArgs.isNullOrEmpty() && fileArgs.size >= 2) fileArgs[1].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[1].toInt() else 1
+            val onColorHex = data[index2]
+            val colorInput = colorHex.toColorInt()
+            val onColorInput = onColorHex.toColorInt()
+            auditThemeAccessibility(onColorInput, colorInput, "Contrasts $onColorHex on $colorHex")
+        }
+
+        "contrasting" -> {
+            val index = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
+            val colorHex = data[index]
+            val colorInput = colorHex.toColorInt()
+            val onColor = getOnColor(colorInput)
+            auditThemeAccessibility(onColor, colorInput, "${onColor.toColorString()} contrasts  on $colorHex")
         }
 
         "derive" -> {

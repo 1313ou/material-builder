@@ -111,6 +111,57 @@ fun toneOf(vararg colorInputs: Int, tone: Int = 40): IntArray {
 }
 
 /**
+ * Computes an 'onColor' that meets a minimum contrast ratio.
+ * Falls back to Black (0) or White (100) if the ratio cannot be met.
+ * Between 4.5 and 7.0
+ *
+ * 1. Level AA (Standard Compliance)
+ * This is the most common legal and design requirement for most apps and websites.
+ *     4.5:1 for Normal Text (typically body text below 18pt or 14pt bold).
+ *     3.0:1 for Large Text (18pt+ or 14pt+ bold) and UI Components (buttons, borders, icons).
+ *
+ * 2. Level AAA (Enhanced Compliance)
+ * This is for high-accessibility needs (e.g., government apps, medical tools, or users with significant vision loss).
+ *     7.0:1 for Normal Text.
+ *     4.5:1 for Large Text.
+ */
+fun getOnColor(baseColorInt: Int, minRatio: Double = 4.5): Int {
+    val hct = Hct.fromInt(baseColorInt)
+    val baseTone = hct.tone
+
+    // 1. Determine direction based on available 'room' in the tone scale
+    // If the background is dark (tone < 50), we look lighter.
+    // If the background is light (tone >= 50), we look darker.
+    val lookLighter = baseTone < 50.0
+
+    // 2. Find the tone that satisfies the ratio
+    val finalTone = findToneWithMinRatio(baseTone, minRatio, lookLighter)
+
+    // 3. Return a new HCT color with the same Hue/Chroma but the new Tone
+    return Hct.from(hct.hue, hct.chroma, finalTone).toInt()
+}
+
+private fun findToneWithMinRatio(baseTone: Double, targetRatio: Double = 4.5, lookLighter: Boolean): Double {
+    if (lookLighter) {
+        // Search from current tone up to White (100)
+        for (t in baseTone.toInt()..100) {
+            if (Contrast.ratioOfTones(baseTone, t.toDouble()) >= targetRatio) {
+                return t.toDouble()
+            }
+        }
+        return 100.0 // Pure White fallback
+    } else {
+        // Search from current tone down to Black (0)
+        for (t in baseTone.toInt() downTo 0) {
+            if (Contrast.ratioOfTones(baseTone, t.toDouble()) >= targetRatio) {
+                return t.toDouble()
+            }
+        }
+        return 0.0 // Pure Black fallback
+    }
+}
+
+/**
  * Generate vibrant palette
  *
  * @param seedInput seed input

@@ -87,22 +87,26 @@ fun printTextColors(vararg maps: Map<String, String>) {
     }
 }
 
-fun printXmlColors(vararg maps: Map<String, String>, mode: String, colorPrefix: String="md_theme_") {
+fun printXmlColors(vararg maps: Map<String, String>, mode: String, colorPrefix: String = "md_theme_") {
     maps.forEach {
+        println("\n<!-- $mode -->")
         println("<resources>")
         it.forEach { (key, value) ->
-            println("\t<color name=\"$colorPrefix${mode}_$key\">$value</color>")
+            println("\t<color name=\"${colorPrefix}$key\">$value</color>")
         }
         println("</resources>")
     }
 }
 
-private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collection<String>, colorPrefix: String="md_theme_") {
+private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collection<String>, colorPrefix: String = "md_theme_") {
     val parent = "Theme.Material3.${mode.replaceFirstChar { it.uppercase() }}.NoActionBar"
-    println("\n<style name=\"$themeName\" parent=\"$parent\">")
+    println("\n<!-- $mode -->")
+    println("<style name=\"$themeName\" parent=\"$parent\">")
+    println("\t<item name=\"customColor\">@color/custom</item>")
+    println("\t<item name=\"onCustomColor\">@color/onCustom</item>")
     rolesRange.forEach {
         val attr = "color${it.replaceFirstChar { it.uppercase() }}"
-        println("\t<item name=\"$attr\">@color/$colorPrefix${mode}_$it</item>")
+        println("\t<item name=\"$attr\">@color/${colorPrefix}$it</item>")
     }
     println("</style>\n")
 }
@@ -114,7 +118,19 @@ private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collect
 fun printDayNightM3ThemeXml(
     rolesRange: List<String> = roles,
 ) {
+    printDayM3ThemeXml(rolesRange)
+    printNightM3ThemeXml(rolesRange)
+}
+
+fun printDayM3ThemeXml(
+    rolesRange: List<String> = roles,
+) {
     printM3ThemeXml("Theme.MyApp.Light", "light", rolesRange)
+}
+
+fun printNightM3ThemeXml(
+    rolesRange: List<String> = roles,
+) {
     printM3ThemeXml("Theme.MyApp.Dark", "dark", rolesRange)
 }
 
