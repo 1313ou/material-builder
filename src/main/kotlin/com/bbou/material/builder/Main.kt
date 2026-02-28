@@ -147,11 +147,11 @@ fun main(args: Array<String>) {
         }
 
         "themeday" -> {
-            printNightM3ThemeXml()
+            printDayM3ThemeXml()
         }
 
         "themenight" -> {
-            printDayM3ThemeXml()
+            printNightM3ThemeXml()
         }
 
         "overlays" -> {
@@ -168,6 +168,14 @@ fun main(args: Array<String>) {
 
         "colors" -> {
             printXmlThemeColors(data, full = full)
+        }
+
+        "colorsday" -> {
+            printXmlThemeColorsDay(data, full = full)
+        }
+
+        "colorsnight" -> {
+            printXmlThemeColorsNight(data, full = full)
         }
 
         "themehtml" -> {
@@ -209,23 +217,34 @@ fun printAccentColors(accents: Triple<Int, Int, Int>, tone: Int = 40) {
     println("Tertiary (Tone $tone): ${tertiaryColor.toColorString()}")
 }
 
-fun printXmlThemeColors(args: List<String>, full: Boolean = false) {
-    val (lightColors, darkColors) = generateThemeColors(args, full)
-    printXmlColors(lightColors, mode = "light")
-    printXmlColors(darkColors, mode = "dark")
+fun printXmlThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
+    printXmlThemeColorsDay(args, isDark = false, full = full)
+    printXmlThemeColorsNight(args, isDark = true, full = full)
+}
+
+fun printXmlThemeColorsDay(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = isDark, full = full)
+    printXmlColors(colors, mode = if (isDark) "dark" else "light")
+}
+
+fun printXmlThemeColorsNight(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = isDark, full = full)
+    printXmlColors(colors, mode = if (isDark) "dark" else "light")
 }
 
 fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {
-    val (lightColors, darkColors) = generateThemeColors(args, full)
+    val lightColors = generateThemeColors(args, isDark = false, full = full)
+    val darkColors = generateThemeColors(args, isDark = true, full = full)
     printHtmlColors(lightColors, darkColors)
 }
 
 fun printTextThemeColors(args: List<String>, full: Boolean = false) {
-    val (lightColors, darkColors) = generateThemeColors(args, full)
+    val lightColors = generateThemeColors(args, isDark = false, full = full)
+    val darkColors = generateThemeColors(args, isDark = true, full = full)
     printTextColors(lightColors, darkColors)
 }
 
-fun generateThemeColors(args: List<String>, full: Boolean = false): Pair<Map<String, String>, Map<String, String>> {
+fun generateThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false): Map<String, String> {
     val surfaceHex = args[0]
     val primaryHex = args[1]
     val surfaceInput = surfaceHex.toColorInt()
@@ -237,16 +256,18 @@ fun generateThemeColors(args: List<String>, full: Boolean = false): Pair<Map<Str
         val tertiaryHex = args[3]
         val secondaryInput = secondaryHex.toColorInt()
         val tertiaryInput = tertiaryHex.toColorInt()
-        generateDayNightM3XmlColors(
+        generateM3XmlColors(
             surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput),
             surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
-            accentRolesRange = if (full) accentRoles else accentRolesMin
+            accentRolesRange = if (full) accentRoles else accentRolesMin,
+            isDark = isDark,
         )
     } else {
-        generateDayNightM3XmlColors(
+        generateM3XmlColors(
             surfaceInput, listOf(primaryInput),
             surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
-            accentRolesRange = if (full) accentRoles else accentRolesMin
+            accentRolesRange = if (full) accentRoles else accentRolesMin,
+            isDark = isDark,
         )
     }
 }

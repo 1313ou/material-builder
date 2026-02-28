@@ -32,7 +32,7 @@ fun getSchemeColor(scheme: SchemeContent, role: String): Int = when (role) {
 }
 
 /**
- * Generate complete M3 Theme
+ * Generate M3 Theme Colors
  * @param surfaceInput surface wanted
  * @param accentHints  hints (primary, secondary, tertiary)
  * @param surfaceRolesRange surface role range
@@ -44,11 +44,30 @@ fun generateDayNightM3XmlColors(
     surfaceRolesRange: List<String> = surfaceRoles,
     accentRolesRange: List<String> = accentRoles,
 ): Pair<Map<String, String>, Map<String, String>> {
+    val lightMap = generateM3XmlColors(surfaceInput, accentHints, surfaceRolesRange, accentRolesRange, isDark = false)
+    val darkMap = generateM3XmlColors(surfaceInput, accentHints, surfaceRolesRange, accentRolesRange, isDark = true)
+    return lightMap to darkMap
+}
+
+/**
+ * Generate M3 Theme Colors
+ * @param surfaceInput surface wanted
+ * @param accentHints  hints (primary, secondary, tertiary)
+ * @param surfaceRolesRange surface role range
+ * @param accentRolesRange  accent role range
+ * @param isDark theme is dark
+ */
+fun generateM3XmlColors(
+    surfaceInput: Int,
+    accentHints: List<Int>,
+    surfaceRolesRange: List<String> = surfaceRoles,
+    accentRolesRange: List<String> = accentRoles,
+    isDark: Boolean = false
+): Map<String, String> {
     val surfaceHct = Hct.fromInt(surfaceInput)
 
     // Generate Schemes (using surface for the overall "Content" vibe)
-    val lightScheme = SchemeContent(surfaceHct, false, 0.0)
-    val darkScheme = SchemeContent(surfaceHct, true, 0.0)
+    val scheme = SchemeContent(surfaceHct, isDark, 0.0)
 
     // Setup accent hints
     val accentInputs = if (accentHints.size == 3) accentHints else {
@@ -56,31 +75,22 @@ fun generateDayNightM3XmlColors(
         deriveOfficialM3Colors(primaryInput).toList()
     }
 
-    // Setup Palettes for hints
+    // Setup palettes for accents
     val palettes = Array(accentInputs.size) { TonalPalette.fromHct(Hct.fromInt(accentInputs[it])) }
 
-    // Light color map
-    val lightMap = LinkedHashMap<String, String>()
-    lightMap["custom"] = surfaceInput.toColorString()
+    // Color map
+    val colorMap = LinkedHashMap<String, String>()
+    colorMap["custom"] = surfaceInput.toColorString()
     // Add vibrant surface colors from the scheme
     surfaceRolesRange.forEach { role ->
-        lightMap[role] = "#${fromScheme(role, lightScheme)}"
+        colorMap[role] = "#${fromScheme(role, scheme)}"
     }
     accentRolesRange.forEach { role ->
         val data = accentRoleDefs[role]!!
-        lightMap[role] = "#${fromPalette(data.first, palettes[data.third - 1])}"
+        colorMap[role] = "#${fromPalette(data.first, palettes[data.third - 1])}"
     }
 
-    val darkMap = LinkedHashMap<String, String>()
-    darkMap["custom"] = surfaceInput.toColorString()
-    surfaceRolesRange.forEach { role ->
-        darkMap[role] = "#${fromScheme(role, darkScheme)}"
-    }
-    accentRolesRange.forEach { role ->
-        val data = accentRoleDefs[role]!!
-        darkMap[role] = "#${fromPalette(data.second, palettes[data.third - 1])}"
-    }
-    return lightMap to darkMap
+    return colorMap
 }
 
 // P R I N T
@@ -138,22 +148,28 @@ fun printNightM3ThemeXml(themeName: String = "AppTheme", rolesRange: List<String
 }
 
 fun printDayNightM3OverlaysXml(overlayName: String = "ThemeOverlays.AppTheme", rolesRange: List<String> = roles) {
+    println("<resources>")
     printDayM3OverlaysXml(overlayName, rolesRange)
     printNightM3OverlaysXml(overlayName, rolesRange)
+    println("</resources>")
 }
 
 fun printDayM3OverlaysXml(overlayName: String = "ThemeOverlays.AppTheme", rolesRange: List<String> = roles) {
+    println("<resources>")
     val rolesMediumContrast = rolesRange.map { it + "_mediumContrast" }.toList()
     printM3ThemeXml("$overlayName.MediumContrast", "light", rolesMediumContrast)
     val rolesHighContrast = rolesRange.map { it + "_highContrast" }.toList()
     printM3ThemeXml("$overlayName.HighContrast", "light", rolesHighContrast)
+    println("</resources>")
 }
 
 fun printNightM3OverlaysXml(overlayName: String = "ThemeOverlays.AppTheme", rolesRange: List<String> = roles) {
+    println("<resources>")
     val rolesMediumContrast = rolesRange.map { it + "_mediumContrast" }.toList()
     printM3ThemeXml("$overlayName.MediumContrast", "dark", rolesMediumContrast)
     val rolesHighContrast = rolesRange.map { it + "_highContrast" }.toList()
     printM3ThemeXml("$overlayName.HighContrast", "dark", rolesHighContrast)
+    println("</resources>")
 }
 
 fun printAttrsXml() {
