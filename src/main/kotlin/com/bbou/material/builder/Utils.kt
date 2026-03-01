@@ -125,7 +125,7 @@ fun toneOf(vararg colorInputs: Int, tone: Int = 40): IntArray {
  *     7.0:1 for Normal Text.
  *     4.5:1 for Large Text.
  */
-fun getOnColor(baseColorInt: Int, minRatio: Double = 4.5): Int {
+fun findOnColor(baseColorInt: Int, minRatio: Double = 4.5): Int {
     val hct = Hct.fromInt(baseColorInt)
     val baseTone = hct.tone
 

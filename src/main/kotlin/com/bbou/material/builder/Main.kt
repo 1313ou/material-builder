@@ -104,7 +104,7 @@ fun main(args: Array<String>) {
             val index = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
             val colorHex = data[index]
             val colorInput = colorHex.toColorInt()
-            val onColor = getOnColor(colorInput)
+            val onColor = findOnColor(colorInput)
             auditThemeAccessibility(onColor, colorInput, "${onColor.toColorString()} contrasts  on $colorHex")
         }
 

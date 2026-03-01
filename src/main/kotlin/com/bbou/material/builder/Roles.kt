@@ -7,9 +7,10 @@ package com.bbou.material.builder
 val accentRoleDefs = mapOf(
     "primary" to Triple(40, 80, 1),
     "onPrimary" to Triple(100, 20, 1),
+    "onPrimary" to Triple(100, 20, 1),
     "primaryContainer" to Triple(90, 30, 1),
     "onPrimaryContainer" to Triple(10, 90, 1),
-    "inversePrimary" to Triple(80, 40, 1),
+    "primaryInverse" to Triple(80, 40, 1),
     "primaryFixed" to Triple(90, 90, 1),
     "onPrimaryFixed" to Triple(10, 10, 1),
     "primaryFixedDim" to Triple(80, 80, 1),
@@ -35,7 +36,7 @@ val accentRoleDefs = mapOf(
 )
 
 val accentRoleMediumContrastDefs = mapOf(
-    "inversePrimary_mediumContrast" to Triple(80, 40, 1),
+    "primaryInverse_mediumContrast" to Triple(80, 40, 1),
     "primary_mediumContrast" to Triple(26, 90, 1),
     "onPrimary_mediumContrast" to Triple(100, 0, 1),
     "primaryContainer_mediumContrast" to Triple(54, 54, 1),
@@ -65,7 +66,7 @@ val accentRoleMediumContrastDefs = mapOf(
 )
 
 val accentRoleHighContrastDefs = mapOf(
-    "inversePrimary_highContrast" to Triple(90, 20, 1),
+    "primaryInverse_highContrast" to Triple(90, 20, 1),
     "primary_highContrast" to Triple(0, 100, 1),
     "onPrimary_highContrast" to Triple(100, 0, 1),
     "primaryContainer_highContrast" to Triple(36, 74, 1),
@@ -129,11 +130,10 @@ var accentRolesMin = primaryAccentRoles + secondaryAccentRoles + tertiaryAccentR
 val surfaceRoles = listOf(
     "surface",
     "onSurface",
-    "onSurface",
     "surfaceVariant",
     "onSurfaceVariant",
-    "inverseSurface",
-    "inverseOnSurface",
+    "surfaceInverse",
+    "onSurfaceInverse",
     "surfaceDim",
     "surfaceBright",
     "surfaceContainerLowest",
@@ -148,7 +148,7 @@ val surfaceRoles = listOf(
     "outline",
     "outlineVariant",
 
-    "scrim",
+    // "scrim",
 
     "error",
     "onError",

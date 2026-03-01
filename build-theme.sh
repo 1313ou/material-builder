@@ -1,6 +1,10 @@
 #!/usr/bin/bash
 
 D="./output"
+if [ ! -z "$1" ]; then
+  D="$1"
+  fi
+echo "$D"
 
 mkdir -p "$D/values"
 mkdir -p "$D/values-night"

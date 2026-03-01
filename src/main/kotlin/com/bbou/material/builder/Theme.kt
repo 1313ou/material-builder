@@ -6,10 +6,10 @@ import com.materialkolor.scheme.SchemeContent
 
 val attrs = """
 <resources>
-  <attr name="colorCustomColor" format="color" />
-  <attr name="colorOnCustomColor" format="color" />
-  <attr name="colorCustomColorContainer" format="color" />
-  <attr name="colorOnCustomColorContainer" format="color" />
+  <attr name="colorCustom" format="color" />
+  <attr name="colorOnCustom" format="color" />
+  <attr name="colorCustomContainer" format="color" />
+  <attr name="colorOnCustomContainer" format="color" />
 </resources>
 """
 
@@ -81,6 +81,7 @@ fun generateM3XmlColors(
     // Color map
     val colorMap = LinkedHashMap<String, String>()
     colorMap["custom"] = surfaceInput.toColorString()
+    colorMap["onCustom"] = findOnColor(surfaceInput).toColorString()
     // Add vibrant surface colors from the scheme
     surfaceRolesRange.forEach { role ->
         colorMap[role] = "#${fromScheme(role, scheme)}"
@@ -124,7 +125,9 @@ private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collect
     println("\t<item name=\"customColor\">@color/custom</item>")
     println("\t<item name=\"onCustomColor\">@color/onCustom</item>")
     rolesRange.forEach {
-        val attr = "color${it.replaceFirstChar { it.uppercase() }}"
+        var attr = "color${it.replaceFirstChar { it.uppercase() }}"
+        if (attr == "colorOnBackground")
+            attr = "android:$attr"
         println("\t<item name=\"$attr\">@color/${colorPrefix}$it</item>")
     }
     println("</style>\n")
@@ -135,8 +138,10 @@ private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collect
  * @param rolesRange  role range
  */
 fun printDayNightM3ThemeXml(themeName: String = "AppTheme", rolesRange: List<String> = roles) {
+    println("<resources>")
     printDayM3ThemeXml(themeName, rolesRange)
     printNightM3ThemeXml(themeName, rolesRange)
+    println("</resources>")
 }
 
 fun printDayM3ThemeXml(themeName: String = "AppTheme", rolesRange: List<String> = roles) {
