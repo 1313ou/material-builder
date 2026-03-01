@@ -194,6 +194,7 @@ private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collect
     println("<style name=\"$themeName\" parent=\"$parent\">")
     println("\t<item name=\"colorCustom\">@color/${colorPrefix}custom</item>")
     println("\t<item name=\"colorOnCustom\">@color/${colorPrefix}onCustom</item>")
+    println("\t<item name=\"colorCustomVariant\">@color/${colorPrefix}customVariant</item>")
     rolesRange.forEach {
         var attr = "color${it.replaceFirstChar { it.uppercase() }}"
         attr = attr.removeSuffix("_highContrast")
