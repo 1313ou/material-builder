@@ -113,6 +113,8 @@ fun toneOf(vararg colorInputs: Int, tone: Int = 40): IntArray {
 /**
  * Computes an 'onColor' that meets a minimum contrast ratio.
  * Falls back to Black (0) or White (100) if the ratio cannot be met.
+ * @param baseColorInt color
+ * @param minRatio min tone ratio
  * Between 4.5 and 7.0
  *
  * 1. Level AA (Standard Compliance)
@@ -159,6 +161,34 @@ private fun findToneWithMinRatio(baseTone: Double, targetRatio: Double = 4.5, lo
         }
         return 0.0 // Pure Black fallback
     }
+}
+
+/**
+ * Computes a surface variant.
+ * @param baseColorInt color
+ * @param isDark true if dark mode
+ */
+fun findSurfaceVariant(baseColorInt: Int, isDark: Boolean): Int {
+    val core = CorePalette.of(baseColorInt)
+    val surfaceVariantPalette = core.n2
+    // Official M3 Tones:
+    // The surfaceVariant is computed using the Neutral Variant (n2) palette,
+    // which is different from the standard Neutral (n1) palette used for the main background.
+    // Light Mode Surface is ~98, Variant is 90 (Darker)
+    // Dark Mode Surface is ~6, Variant is 30 (Lighter)
+    return surfaceVariantPalette.tone(if (isDark) 30 else 90)
+}
+
+/**
+ * Computes an accent variant.
+ * @param baseColorInt color
+ * @param isDark true if dark mode
+ */
+fun findAccentVariant(baseColorInt: Int, isDark: Boolean): Int {
+    val palette = CorePalette.of(baseColorInt).a1
+    // Most M3 'Containers' (the modern Variant) use Tone 90 for Light and 30 for Dark.
+    // If you want a "Deep" variant, use Tone 30 for Light and 90 for Dark.
+    return palette.tone(if (isDark) 90 else 30)
 }
 
 /**

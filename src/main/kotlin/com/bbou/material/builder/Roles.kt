@@ -4,7 +4,7 @@ package com.bbou.material.builder
 
 // Light tone, dark tone, palette index (1= primary, 2=secondary, 3=tertiary)
 // Role definitions: Key -> (LightTone, DarkTone, Palette)
-val accentRoleDefs = mapOf(
+val accentRoleBaseDefs = mapOf(
     "primary" to Triple(40, 80, 1),
     "onPrimary" to Triple(100, 20, 1),
     "onPrimary" to Triple(100, 20, 1),
@@ -95,7 +95,9 @@ val accentRoleHighContrastDefs = mapOf(
     "onTertiaryFixedVariant_highContrast" to Triple(0, 0, 3),
 )
 
-val accentRoles = accentRoleDefs.keys.toList()
+val accentRoleDefs = accentRoleBaseDefs + accentRoleMediumContrastDefs + accentRoleHighContrastDefs
+
+val accentRoles = accentRoleBaseDefs.keys.toList()
 
 val accentRolesMediumContrast = accentRoleMediumContrastDefs.keys.toList()
 

@@ -244,7 +244,7 @@ fun printTextThemeColors(args: List<String>, full: Boolean = false) {
     printTextColors(lightColors, darkColors)
 }
 
-fun generateThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false): Map<String, String> {
+fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: List<String> = listOf("medium", "high"), full: Boolean = false): Map<String, String> {
     val surfaceHex = args[0]
     val primaryHex = args[1]
     val surfaceInput = surfaceHex.toColorInt()
@@ -260,6 +260,7 @@ fun generateThemeColors(args: List<String>, isDark: Boolean = false, full: Boole
             surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput),
             surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
             accentRolesRange = if (full) accentRoles else accentRolesMin,
+            contrasts = contrasts,
             isDark = isDark,
         )
     } else {
@@ -267,6 +268,7 @@ fun generateThemeColors(args: List<String>, isDark: Boolean = false, full: Boole
             surfaceInput, listOf(primaryInput),
             surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
             accentRolesRange = if (full) accentRoles else accentRolesMin,
+            contrasts = contrasts,
             isDark = isDark,
         )
     }
