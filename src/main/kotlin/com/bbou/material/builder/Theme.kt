@@ -130,7 +130,7 @@ fun generateM3XmlColors(
     surfaceRolesRange.forEach { role ->
         colorMap[role] = "#${fromScheme(role, scheme)}"
     }
-    // constrast
+    // contrast
     if (contrasts.isNotEmpty()) {
         contrasts.forEach { contrast ->
             val contrastLevel = when (contrast) {
