@@ -122,8 +122,8 @@ fun generateM3XmlColors(
 
     // Custom
     colorMap["custom"] = surfaceInput.toColorString()
-    colorMap["onCustom"] = findOnColor(surfaceInput).toColorString()
-    colorMap["customVariant"] = findSurfaceVariant(surfaceInput, isDark = isDark).toColorString()
+    colorMap["onCustom"] = findOnColor(surfaceInput, minRatio = 7.0).toColorString()
+    colorMap["customVariant"] = findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 90, deltaLight = 30).toColorString()
 
     // Surfaces
     // Generate Schemes (using surface for the overall "Content" vibe)

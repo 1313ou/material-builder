@@ -184,11 +184,20 @@ fun findSurfaceVariant(baseColorInt: Int, isDark: Boolean): Int {
  * @param baseColorInt color
  * @param isDark true if dark mode
  */
-fun findAccentVariant(baseColorInt: Int, isDark: Boolean): Int {
+fun findTonalVariant(baseColorInt: Int, isDark: Boolean, deltaDark: Int = 90, deltaLight: Int = 30): Int {
     val palette = CorePalette.of(baseColorInt).a1
+    return palette.tone(if (isDark) deltaDark else deltaLight)
+}
+
+/**
+ * Computes an accent variant.
+ * @param baseColorInt color
+ * @param isDark true if dark mode
+ */
+fun findAccentVariant(baseColorInt: Int, isDark: Boolean): Int {
     // Most M3 'Containers' (the modern Variant) use Tone 90 for Light and 30 for Dark.
     // If you want a "Deep" variant, use Tone 30 for Light and 90 for Dark.
-    return palette.tone(if (isDark) 90 else 30)
+    return findTonalVariant(baseColorInt, isDark, deltaDark = 90, deltaLight = 30)
 }
 
 /**
