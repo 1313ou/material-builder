@@ -116,7 +116,6 @@ fun generateM3XmlColors(
         deriveOfficialM3Colors(primaryInput).toList()
     }
 
-
     // Color map
     val colorMap = LinkedHashMap<String, String>()
 
