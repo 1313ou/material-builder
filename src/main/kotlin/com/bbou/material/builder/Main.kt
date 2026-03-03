@@ -217,19 +217,19 @@ fun printAccentColors(accents: Triple<Int, Int, Int>, tone: Int = 40) {
     println("Tertiary (Tone $tone): ${tertiaryColor.toColorString()}")
 }
 
-fun printXmlThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
-    printXmlThemeColorsDay(args, isDark = false, full = full)
-    printXmlThemeColorsNight(args, isDark = true, full = full)
+fun printXmlThemeColors(args: List<String>, full: Boolean = false) {
+    printXmlThemeColorsDay(args, full = full)
+    printXmlThemeColorsNight(args, full = full)
 }
 
-fun printXmlThemeColorsDay(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
-    val colors = generateThemeColors(args, isDark = isDark, full = full)
-    printXmlColors(colors, mode = if (isDark) "dark" else "light")
+fun printXmlThemeColorsDay(args: List<String>, full: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = false, full = full)
+    printXmlColors(colors, mode = "light")
 }
 
-fun printXmlThemeColorsNight(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
-    val colors = generateThemeColors(args, isDark = isDark, full = full)
-    printXmlColors(colors, mode = if (isDark) "dark" else "light")
+fun printXmlThemeColorsNight(args: List<String>, full: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = true, full = full)
+    printXmlColors(colors, mode = "dark")
 }
 
 fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {
