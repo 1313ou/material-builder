@@ -173,11 +173,10 @@ fun generateM3XmlColors(
 
 // P R I N T
 
-fun mapColors(colorMap: Map<String, String>, rolesRange: List<String> = customRoles1 + surfaceRoles1 + accentRoles1 ) {
-    val result = rolesRange.joinToString(separator = " ") { role ->
+fun mapColors(colorMap: Map<String, String>, rolesRange: List<String> = customRoles1 + surfaceRoles1 + accentRoles1): List<String> {
+    return rolesRange.map { role ->
         colorMap[role]!!
-    }
-    println(result)
+    }.toList()
 }
 
 fun printTextColors(vararg maps: Map<String, String>) {

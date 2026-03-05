@@ -16,6 +16,8 @@ fun main(args: Array<String>) {
     val max by parser.option(ArgType.Int, shortName = "m", fullName = "max", description = "Take max values (-1=all)")
     val indexes by parser.option(ArgType.String, shortName = "i", fullName = "index", description = "Indexes of values to take")
     val scrape by parser.option(ArgType.Boolean, shortName = "s", fullName = "scrape", description = "Scrape color expressions").default(false)
+    val day by parser.option(ArgType.Boolean, shortName = "d", fullName = "day", description = "Theme day colors").default(false)
+    val night by parser.option(ArgType.Boolean, shortName = "n", fullName = "night", description = "Theme night colors").default(false)
     val full by parser.option(ArgType.Boolean, shortName = "x", fullName = "full", description = "Full output").default(false)
     val verbose by parser.option(ArgType.Boolean, shortName = "v", fullName = "verbose", description = "Verbose output").default(false)
 
@@ -49,6 +51,14 @@ fun main(args: Array<String>) {
         data = findHashColors(data.joinToString(separator = "\n"))
     }
 
+    if (day) {
+        data = mapThemeColors1Day(data)
+    }
+
+    if (night) {
+        data = mapThemeColors1Night(data)
+    }
+
     max?.let { data = data.take(it) }
 
     indexes?.let {
@@ -57,7 +67,7 @@ fun main(args: Array<String>) {
     }
 
     when (operation) {
-        "args" -> {
+        "print" -> {
             println(data)
         }
 
@@ -206,11 +216,11 @@ fun main(args: Array<String>) {
         }
 
         "mapday" -> {
-            mapThemeColors1Day(data)
+            println(mapThemeColors1Day(data).joinToString(separator = " "))
         }
 
         "mapnight" -> {
-            mapThemeColors1Night(data)
+            println(mapThemeColors1Night(data).joinToString(separator = " "))
         }
 
         "themehtml" -> {
@@ -289,14 +299,14 @@ fun printTextThemeColors1Night(args: List<String>) {
     printTextColors(darkColors)
 }
 
-fun mapThemeColors1Day(args: List<String>) {
+fun mapThemeColors1Day(args: List<String>): List<String> {
     val lightColors = generateThemeColors(args, isDark = false, one = true)
-    mapColors(lightColors)
+    return mapColors(lightColors)
 }
 
-fun mapThemeColors1Night(args: List<String>) {
+fun mapThemeColors1Night(args: List<String>): List<String> {
     val darkColors = generateThemeColors(args, isDark = true, one = true)
-    mapColors(darkColors)
+    return mapColors(darkColors)
 }
 
 fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: List<String> = listOf("medium", "high"), full: Boolean = false, one: Boolean = false): Map<String, String> {
