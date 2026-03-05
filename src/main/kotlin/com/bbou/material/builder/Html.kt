@@ -3,7 +3,7 @@ package com.bbou.material.builder
 import com.materialkolor.hct.Hct
 
 const val template = """
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>template.html</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>%TITLE%.html</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 div#colors div{float: left; width: 64px; height: 64px; margin: 2px; text-align: center; font-size: 12px; font-family: Arial, Helvetica, sans-serif}
@@ -12,7 +12,8 @@ div#colors div span:hover{text-decoration: underline}
 html{}
 input{margin-left: 1em;}
 </style></head>
-<body>
+<body>>
+<div>%TITLE%</div>
 <div id="colors"><table>
 %COLORS%
 </table></div>
@@ -25,26 +26,26 @@ const val colorTemplate = "<tr><td>%LABEL%</td><td><div style=\"background-color
 const val colorTemplate2 =
     "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 
-fun printHtmlColors(colors: Map<String, String>) {
-    println(toHtml(colors))
+fun printHtmlColors(colors: Map<String, String>, title: String) {
+    println(toHtml(colors, title))
 }
 
-fun printHtmlColors(colors: List<String>) {
-    println(toHtml(colors))
+fun printHtmlColors(colors: List<String>, title: String) {
+    println(toHtml(colors, title))
 }
 
-fun printHtmlColors(lightColors: Map<String, String>, darkColors: Map<String, String>) {
+fun printHtmlColors(lightColors: Map<String, String>, darkColors: Map<String, String>, title: String) {
     //println(toHtml(lightColors))
     //println(toHtml(darkColors))
-    println(toHtml2(lightColors, darkColors))
+    println(toHtml2(lightColors, darkColors, title))
 }
 
-fun toHtml(colors: List<String>): String {
+fun toHtml(colors: List<String>, title: String): String {
     val map = colors.associateWith { it }
-    return toHtml(map)
+    return toHtml(map, title)
 }
 
-fun toHtml(colors: Map<String, String>): String {
+fun toHtml(colors: Map<String, String>, title: String): String {
     val colorsDiv = colors.entries.joinToString(separator = "\n") {
         val label = it.key
         val value = it.value
@@ -55,10 +56,12 @@ fun toHtml(colors: Map<String, String>): String {
             .replace("%VALUE%", value)
             .replace("%BACKGROUND%", value)
     }
-    return template.replace("%COLORS%", colorsDiv)
+    return template
+        .replace("%COLORS%", colorsDiv)
+        .replace("%TITLES%", title)
 }
 
-fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>): String {
+fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: String): String {
     val colorsDiv = colors1.keys.joinToString(separator = "\n") {
         val lightValue = colors1[it]!!
         val darkValue = colors2[it]!!
@@ -73,8 +76,9 @@ fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>): String 
             .replace("%DBACKGROUND%", darkValue)
             .replace("%DFOREGROUND%", darkForeground)
     }
-    return template.replace("%COLORS%", colorsDiv)
-
+    return template
+        .replace("%COLORS%", colorsDiv)
+        .replace("%TITLES%", title)
 }
 
 private fun Int.isLight(): Boolean {

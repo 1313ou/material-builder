@@ -5,6 +5,7 @@ import com.materialkolor.hct.Hct
 import com.materialkolor.palettes.CorePalette
 import com.materialkolor.palettes.TonalPalette
 import com.materialkolor.scheme.SchemeContent
+import kotlin.system.exitProcess
 
 /**
  *  Convert to color int
@@ -328,8 +329,10 @@ fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: Strin
     // 2. Calculate ratio based on Tones (Standard M3 calculation)
     val ratio = Contrast.ratioOfTones(fgTone, bgTone)
 
-    val status = if (ratio >= 4.5) "✅ PASS" else "⚠️ LOW CONTRAST"
+    val pass = ratio >= 4.5
+    val status = if (pass) "✅ PASS" else "⚠️ LOW CONTRAST"
     System.err.println("$label: ${"%.2f".format(ratio)}:1 -> $status")
+    exitProcess(if (pass) 0 else 1)
 }
 
 fun checkContrast(foregroundInt: Int, backgroundInt: Int, label: String) {
@@ -340,6 +343,7 @@ fun checkContrast(foregroundInt: Int, backgroundInt: Int, label: String) {
     // 2. Calculate ratio based on Tones (Standard M3 calculation)
     val ratio = Contrast.ratioOfTones(fgTone, bgTone)
 
-    if (ratio < 4.5)
+    val pass = ratio >= 4.5
+    if (pass)
         System.err.println("$label: ${"%.2f".format(ratio)}:1 ⚠️ LOW CONTRAST")
 }

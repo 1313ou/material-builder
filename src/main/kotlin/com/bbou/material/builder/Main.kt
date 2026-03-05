@@ -5,6 +5,7 @@ import com.bbou.material.builder.Search.findRgbColors
 import com.bbou.material.builder.Search.findXColors
 import kotlinx.cli.*
 import java.io.File
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     val parser = ArgParser("material-builder")
@@ -127,7 +128,7 @@ fun main(args: Array<String>) {
         }
 
         "html" -> {
-            printHtmlColors(data)
+            printHtmlColors(data, if (file != null) file!! else if (text != null) text!! else data.joinToString(separator=","))
         }
 
         "palette" -> {
@@ -145,6 +146,7 @@ fun main(args: Array<String>) {
             val colorInput = colorHex.toColorInt()
             val onColorInput = onColorHex.toColorInt()
             auditThemeAccessibility(onColorInput, colorInput, "Contrasts $onColorHex on $colorHex")
+            exitProcess(1)
         }
 
         "contrasting" -> {
@@ -298,7 +300,7 @@ fun printXmlThemeColorsNight(args: List<String>, full: Boolean = false) {
 fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {
     val lightColors = generateThemeColors(args, isDark = false, full = full)
     val darkColors = generateThemeColors(args, isDark = true, full = full)
-    printHtmlColors(lightColors, darkColors)
+    printHtmlColors(lightColors, darkColors, args.joinToString(separator=","))
 }
 
 fun printTextThemeColors(args: List<String>, full: Boolean = false) {
