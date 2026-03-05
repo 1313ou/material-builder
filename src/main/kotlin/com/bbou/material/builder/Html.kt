@@ -40,9 +40,7 @@ fun printHtmlColors(lightColors: Map<String, String>, darkColors: Map<String, St
 }
 
 fun toHtml(colors: List<String>): String {
-    val map = colors
-        .map { it to it }
-        .toMap()
+    val map = colors.associateWith { it }
     return toHtml(map)
 }
 

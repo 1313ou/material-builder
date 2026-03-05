@@ -2,12 +2,12 @@
 
 D="./output"
 Dcore="./output"
-echo $1 $2
-if [ ! -z "$1" ]; then
+echo "$1" "$2"
+if [ -n "$1" ]; then
   D="$1"
   Dcore=$(readlink -f "${D}/../../../../core/src/main/res")
   fi
-if [ ! -z "$2" ]; then
+if [ -n "$2" ]; then
   seeds=$(readlink -f "$2")
   seeds="-f $2"
 else

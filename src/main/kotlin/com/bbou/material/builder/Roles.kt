@@ -1,5 +1,15 @@
 package com.bbou.material.builder
 
+// C U S T O M
+
+val customRoles = listOf(
+    "custom",
+    "onCustom",
+    "customVariant",
+)
+
+val customRoles1 = listOf("custom")
+
 // A C C E N T
 
 // Light tone, dark tone, palette index (1= primary, 2=secondary, 3=tertiary)
@@ -126,6 +136,8 @@ val tertiaryAccentRoles = listOf(
 
 var accentRolesMin = primaryAccentRoles + secondaryAccentRoles + tertiaryAccentRoles
 
+var accentRoles1 = listOf("primary", "secondary", "tertiary")
+
 // S U R F A C E
 
 // Handled by SchemeContent
@@ -160,8 +172,12 @@ val surfaceRoles = listOf(
 
 val surfaceRolesMin = listOf("surface", "onSurface", "surfaceContainer", "background", "outline")
 
+val surfaceRoles1 = listOf("surface")
+
 val roles = surfaceRoles + accentRoles
 
-val rolesMin = surfaceRolesMin + primaryAccentRoles
+val rolesMin = surfaceRolesMin + accentRolesMin
+
+val roles1 = surfaceRoles1 + accentRoles1
 
 const val namePrefix = "md_theme_"

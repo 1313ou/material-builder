@@ -13,6 +13,8 @@ fun main(args: Array<String>) {
     val operation by parser.option(ArgType.String, shortName = "o", fullName = "operation", description = "Operation").required()
     val text by parser.option(ArgType.String, shortName = "t", fullName = "text", description = "Unparsed Input file")
     val file by parser.option(ArgType.String, shortName = "f", fullName = "file", description = "Parsed Input file (field extracted)")
+    val max by parser.option(ArgType.Int, shortName = "m", fullName = "max", description = "Take max values (-1=all)")
+    val indexes by parser.option(ArgType.String, shortName = "i", fullName = "index", description = "Indexes of values to take")
     val scrape by parser.option(ArgType.Boolean, shortName = "s", fullName = "scrape", description = "Scrape color expressions").default(false)
     val full by parser.option(ArgType.Boolean, shortName = "x", fullName = "full", description = "Full output").default(false)
     val verbose by parser.option(ArgType.Boolean, shortName = "v", fullName = "verbose", description = "Verbose output").default(false)
@@ -47,6 +49,13 @@ fun main(args: Array<String>) {
         data = findHashColors(data.joinToString(separator = "\n"))
     }
 
+    max?.let { data = data.take(it) }
+
+    indexes?.let {
+        val takeIndexes = indexes!!.split(",").map { it.toInt() }.toHashSet()
+        data = data.withIndex().filter { (i, _) -> i in takeIndexes }.map { (_, datai) -> datai }
+    }
+
     when (operation) {
         "args" -> {
             println(data)
@@ -77,6 +86,16 @@ fun main(args: Array<String>) {
         "name" -> {
             val dataInt = data.map { it.toColorInt() }.toIntArray()
             ColorNameFinder.name(*dataInt)
+        }
+
+        "name_gpick" -> {
+            val dataInt = data.map { it.toColorInt() }.toIntArray()
+            ColorNameFinder.nameGpick(*dataInt)
+        }
+
+        "name_css" -> {
+            val dataInt = data.map { it.toColorInt() }.toIntArray()
+            ColorNameFinder.nameCss(*dataInt)
         }
 
         "html" -> {
@@ -178,6 +197,22 @@ fun main(args: Array<String>) {
             printXmlThemeColorsNight(data, full = full)
         }
 
+        "colors1day" -> {
+            printTextThemeColors1Day(data)
+        }
+
+        "colors1night" -> {
+            printTextThemeColors1Night(data)
+        }
+
+        "mapday" -> {
+            mapThemeColors1Day(data)
+        }
+
+        "mapnight" -> {
+            mapThemeColors1Night(data)
+        }
+
         "themehtml" -> {
             printHtmlThemeColors(data, full = full)
         }
@@ -200,7 +235,7 @@ fun fromFileText(filePath: String): List<String> {
 fun fromFileFields(filePath: String): List<String> {
     return File(filePath).useLines { lines ->
         lines
-            .map { it.takeWhile({ c: Char -> !c.isWhitespace() }) }
+            .map { it.takeWhile { c: Char -> !c.isWhitespace() } }
             .toList()
     }
 }
@@ -244,12 +279,32 @@ fun printTextThemeColors(args: List<String>, full: Boolean = false) {
     printTextColors(lightColors, darkColors)
 }
 
-fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: List<String> = listOf("medium", "high"), full: Boolean = false): Map<String, String> {
+fun printTextThemeColors1Day(args: List<String>) {
+    val lightColors = generateThemeColors(args, isDark = false, one = true)
+    printTextColors(lightColors)
+}
+
+fun printTextThemeColors1Night(args: List<String>) {
+    val darkColors = generateThemeColors(args, isDark = true, one = true)
+    printTextColors(darkColors)
+}
+
+fun mapThemeColors1Day(args: List<String>) {
+    val lightColors = generateThemeColors(args, isDark = false, one = true)
+    mapColors(lightColors)
+}
+
+fun mapThemeColors1Night(args: List<String>) {
+    val darkColors = generateThemeColors(args, isDark = true, one = true)
+    mapColors(darkColors)
+}
+
+fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: List<String> = listOf("medium", "high"), full: Boolean = false, one: Boolean = false): Map<String, String> {
     val surfaceHex = args[0]
     val primaryHex = args[1]
     val surfaceInput = surfaceHex.toColorInt()
     val primaryInput = primaryHex.toColorInt()
-    auditThemeAccessibility(surfaceInput, primaryInput, "Primary $primaryHex on Surface $surfaceHex")
+    checkContrast(surfaceInput, primaryInput, "Primary $primaryHex on Surface $surfaceHex")
 
     return if (args.size > 2) {
         val secondaryHex = args[2]
@@ -258,17 +313,19 @@ fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: 
         val tertiaryInput = tertiaryHex.toColorInt()
         generateM3XmlColors(
             surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput),
-            surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
-            accentRolesRange = if (full) accentRoles else accentRolesMin,
-            contrasts = contrasts,
+            customRolesRange = if (one) customRoles1 else customRoles,
+            surfaceRolesRange = if (one) surfaceRoles1 else if (full) surfaceRoles else surfaceRolesMin,
+            accentRolesRange = if (one) accentRoles1 else if (full) accentRoles else accentRolesMin,
+            contrasts = if (one) emptyList() else contrasts,
             isDark = isDark,
         )
     } else {
         generateM3XmlColors(
             surfaceInput, listOf(primaryInput),
-            surfaceRolesRange = if (full) surfaceRoles else surfaceRolesMin,
-            accentRolesRange = if (full) accentRoles else accentRolesMin,
-            contrasts = contrasts,
+            customRolesRange = if (one) customRoles1 else customRoles,
+            surfaceRolesRange = if (one) surfaceRoles1 else if (full) surfaceRoles else surfaceRolesMin,
+            accentRolesRange = if (one) accentRoles1 else if (full) accentRoles else accentRolesMin,
+            contrasts = if (one) emptyList() else contrasts,
             isDark = isDark,
         )
     }

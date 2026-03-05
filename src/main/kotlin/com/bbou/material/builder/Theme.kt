@@ -4,7 +4,7 @@ import com.materialkolor.hct.Hct
 import com.materialkolor.palettes.TonalPalette
 import com.materialkolor.scheme.SchemeContent
 
-val attrs = """
+const val attrs = """
 <resources>
   <attr name="colorCustom" format="color" />
   <attr name="colorOnCustom" format="color" />
@@ -103,6 +103,7 @@ fun generateDayNightM3XmlColors(
 fun generateM3XmlColors(
     surfaceInput: Int,
     accentHints: List<Int>,
+    customRolesRange: List<String> = customRoles,
     surfaceRolesRange: List<String> = surfaceRoles,
     accentRolesRange: List<String> = accentRoles,
     contrasts: List<String> = listOf(),
@@ -110,19 +111,21 @@ fun generateM3XmlColors(
 ): Map<String, String> {
     val surfaceHct = Hct.fromInt(surfaceInput)
 
-    // Setup accent hints
-    val accentInputs = if (accentHints.size == 3) accentHints else {
-        val primaryInput = accentHints[0]
-        deriveOfficialM3Colors(primaryInput).toList()
-    }
 
     // Color map
     val colorMap = LinkedHashMap<String, String>()
 
     // Custom
-    colorMap["custom"] = surfaceInput.toColorString()
-    colorMap["onCustom"] = findOnColor(surfaceInput, minRatio = 7.0).toColorString()
-    colorMap["customVariant"] = findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 90, deltaLight = 30).toColorString()
+    customRolesRange.forEach { role ->
+        val value = when (role) {
+            "custom" -> surfaceInput.toColorString()
+            "onCustom" -> findOnColor(surfaceInput, minRatio = 7.0).toColorString()
+            "customVariant" -> findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 90, deltaLight = 30).toColorString()
+            "onCustomVariant" -> findOnColor(findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 90, deltaLight = 30), minRatio = 7.0).toColorString()
+            else -> throw IllegalArgumentException("Unknown custom $role")
+        }
+        colorMap[role] = value
+    }
 
     // Surfaces
     // Generate Schemes (using surface for the overall "Content" vibe)
@@ -147,6 +150,11 @@ fun generateM3XmlColors(
     }
 
     // Accents
+    // Setup accent hints
+    val accentInputs = if (accentHints.size == 3) accentHints else {
+        val primaryInput = accentHints[0]
+        deriveOfficialM3Colors(primaryInput).toList()
+    }
     // Setup palettes for accents
     val palettes = Array(accentInputs.size) { TonalPalette.fromHct(Hct.fromInt(accentInputs[it])) }
     accentRolesRange.forEach { role ->
@@ -165,12 +173,19 @@ fun generateM3XmlColors(
 
 // P R I N T
 
+fun mapColors(colorMap: Map<String, String>, rolesRange: List<String> = customRoles1 + surfaceRoles1 + accentRoles1 ) {
+    val result = rolesRange.joinToString(separator = " ") { role ->
+        colorMap[role]!!
+    }
+    println(result)
+}
+
 fun printTextColors(vararg maps: Map<String, String>) {
     maps.forEach {
         it.forEach { (key, value) ->
             val colorInt = value.toColorInt()
-            val name = findCSSName(colorInt)
-            val name2 = findGpickName(colorInt)
+            val name = findGpickName(colorInt)
+            val name2 = findCSSName(colorInt)
             println("$key $value $name $name2")
         }
     }
@@ -195,7 +210,7 @@ private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collect
     println("\t<item name=\"colorOnCustom\">@color/${colorPrefix}onCustom</item>")
     println("\t<item name=\"colorCustomVariant\">@color/${colorPrefix}customVariant</item>")
     rolesRange.forEach {
-        var attr = "color${it.replaceFirstChar { it.uppercase() }}"
+        var attr = "color${it.replaceFirstChar { c -> c.uppercase() }}"
         attr = attr.removeSuffix("_highContrast")
         attr = attr.removeSuffix("_mediumContrast")
         if (attr == "colorBackground")

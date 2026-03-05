@@ -19,18 +19,18 @@ object Search {
         return regex.findAll(text)
     }
 
-    val hashPattern = "#[0-9a-fA-F]{6,}"
+    const val HASH_PATTERN = "#[0-9a-fA-F]{6,}"
 
-    val xPattern = "0x[0-9a-fA-F]{6,}"
+    const val X_PATTERN = "0x[0-9a-fA-F]{6,}"
 
-    val rgbPattern = "^([0-9]+)\\s+([0-9]+)\\s+([0-9]+)"
+    const val RGB_PATTERN = "^([0-9]+)\\s+([0-9]+)\\s+([0-9]+)"
 
-    fun findHashColors(text: String): List<String> = findAllOccurrences(text, pattern = hashPattern)
+    fun findHashColors(text: String): List<String> = findAllOccurrences(text, pattern = HASH_PATTERN)
 
-    fun findXColors(text: String): List<String> = findAllOccurrences(text, pattern = xPattern)
+    fun findXColors(text: String): List<String> = findAllOccurrences(text, pattern = X_PATTERN)
 
     fun findRgbColors(text: String): List<String> {
-        val results = findAllMatches(text, pattern = rgbPattern).toList()
+        val results = findAllMatches(text, pattern = RGB_PATTERN).toList()
         return results.map { match ->
             val r = match.groupValues[1].toInt()
             val g = match.groupValues[2].toInt()

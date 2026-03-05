@@ -331,3 +331,15 @@ fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: Strin
     val status = if (ratio >= 4.5) "✅ PASS" else "⚠️ LOW CONTRAST"
     System.err.println("$label: ${"%.2f".format(ratio)}:1 -> $status")
 }
+
+fun checkContrast(foregroundInt: Int, backgroundInt: Int, label: String) {
+    // 1. Convert colors to HCT to get their Tones
+    val fgTone = Hct.fromInt(foregroundInt).tone
+    val bgTone = Hct.fromInt(backgroundInt).tone
+
+    // 2. Calculate ratio based on Tones (Standard M3 calculation)
+    val ratio = Contrast.ratioOfTones(fgTone, bgTone)
+
+    if (ratio < 4.5)
+        System.err.println("$label: ${"%.2f".format(ratio)}:1 ⚠️ LOW CONTRAST")
+}

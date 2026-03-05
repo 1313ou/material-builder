@@ -146,12 +146,22 @@ class ColorNameFinder(val colorMap: Map<Int, String>) {
                 val gpick = "${valueGPick?.toColorString()},$nameGPick"
                 val resene = "${valueResene?.toColorString()},$nameResene"
                 println(
-                    "${it.toColorString()} ${descriptive.padEnd(25)} -> CSS = ${css.padEnd(25)}, X11 = ${x11.padEnd(25)}, GPICK = ${gpick.padEnd(25)}, RESENE = ${
-                        resene.padEnd(
-                            25
-                        )
-                    }"
+                    "${it.toColorString()} ${descriptive.padEnd(25)} -> GPICK = ${gpick.padEnd(25)}, CSS = ${css.padEnd(25)}, X11 = ${x11.padEnd(25)}, RESENE = ${resene.padEnd(25)}"
                 )
+            }
+        }
+
+        fun nameGpick(vararg colorInputs: Int) {
+            colorInputs.forEach {
+                val (nameGPick, _) = findGpickName(it)
+                println("$nameGPick (${it.toColorString()})")
+            }
+        }
+
+        fun nameCss(vararg colorInputs: Int) {
+            colorInputs.forEach {
+                val (nameCss, _) = findCSSName(it)
+                println("$nameCss (${it.toColorString()})")
             }
         }
 
