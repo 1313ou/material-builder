@@ -330,19 +330,18 @@ fun mapThemeColors1Night(args: List<String>): List<String> {
 }
 
 fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: List<String> = listOf("medium", "high"), full: Boolean = false, one: Boolean = false): Map<String, String> {
-    val surfaceHex = args[0]
-    val primaryHex = args[1]
-    val surfaceInput = surfaceHex.toColorInt()
-    val primaryInput = primaryHex.toColorInt()
-    checkContrast(surfaceInput, primaryInput, "Primary $primaryHex on Surface $surfaceHex")
+    val surfaceHintHex = args[0]
+    val primaryHintHex = args[1]
+    val surfaceHint = surfaceHintHex.toColorInt()
+    val primaryHint = primaryHintHex.toColorInt()
 
     return if (args.size > 2) {
-        val secondaryHex = args[2]
-        val tertiaryHex = args[3]
-        val secondaryInput = secondaryHex.toColorInt()
-        val tertiaryInput = tertiaryHex.toColorInt()
+        val secondaryHintHex = args[2]
+        val tertiaryHintHex = args[3]
+        val secondaryHint = secondaryHintHex.toColorInt()
+        val tertiaryHint = tertiaryHintHex.toColorInt()
         generateM3XmlColors(
-            surfaceInput, listOf(primaryInput, secondaryInput, tertiaryInput),
+            surfaceHint, listOf(primaryHint, secondaryHint, tertiaryHint),
             customRolesRange = if (one) customRoles1 else customRoles,
             surfaceRolesRange = if (one) surfaceRoles1 else if (full) surfaceRoles else surfaceRolesMin,
             accentRolesRange = if (one) accentRoles1 else if (full) accentRoles else accentRolesMin,
@@ -351,7 +350,7 @@ fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: 
         )
     } else {
         generateM3XmlColors(
-            surfaceInput, listOf(primaryInput),
+            surfaceHint, listOf(primaryHint),
             customRolesRange = if (one) customRoles1 else customRoles,
             surfaceRolesRange = if (one) surfaceRoles1 else if (full) surfaceRoles else surfaceRolesMin,
             accentRolesRange = if (one) accentRoles1 else if (full) accentRoles else accentRolesMin,

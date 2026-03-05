@@ -3,7 +3,7 @@ package com.bbou.material.builder
 import com.materialkolor.hct.Hct
 
 const val template = """
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>%TITLE%.html</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>%TITLE%</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 div#colors div{float: left; width: 64px; height: 64px; margin: 2px; text-align: center; font-size: 12px; font-family: Arial, Helvetica, sans-serif}
@@ -12,8 +12,9 @@ div#colors div span:hover{text-decoration: underline}
 html{}
 input{margin-left: 1em;}
 </style></head>
-<body>>
+<body>
 <div>%TITLE%</div>
+<br/>
 <div id="colors"><table>
 %COLORS%
 </table></div>
@@ -58,7 +59,7 @@ fun toHtml(colors: Map<String, String>, title: String): String {
     }
     return template
         .replace("%COLORS%", colorsDiv)
-        .replace("%TITLES%", title)
+        .replace("%TITLE%", title)
 }
 
 fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: String): String {
@@ -78,7 +79,7 @@ fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: S
     }
     return template
         .replace("%COLORS%", colorsDiv)
-        .replace("%TITLES%", title)
+        .replace("%TITLE%", title)
 }
 
 private fun Int.isLight(): Boolean {
