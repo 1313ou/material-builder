@@ -10,16 +10,20 @@ fun main(args: Array<String>) {
     val parser = ArgParser("material-builder")
 
     // Options (start with - or --)
-    val operation by parser.option(ArgType.String, shortName = "o", fullName = "operation", description = "Operation").required()
-    val text by parser.option(ArgType.String, shortName = "t", fullName = "text", description = "Unparsed Input file")
-    val file by parser.option(ArgType.String, shortName = "f", fullName = "file", description = "Parsed Input file (field extracted)")
-    val max by parser.option(ArgType.Int, shortName = "m", fullName = "max", description = "Take max values (-1=all)")
-    val indexes by parser.option(ArgType.String, shortName = "i", fullName = "index", description = "Indexes of values to take")
-    val scrape by parser.option(ArgType.Boolean, shortName = "s", fullName = "scrape", description = "Scrape color expressions").default(false)
-    val day by parser.option(ArgType.Boolean, shortName = "d", fullName = "day", description = "Theme day colors").default(false)
-    val night by parser.option(ArgType.Boolean, shortName = "n", fullName = "night", description = "Theme night colors").default(false)
-    val full by parser.option(ArgType.Boolean, shortName = "x", fullName = "full", description = "Full output").default(false)
-    val verbose by parser.option(ArgType.Boolean, shortName = "v", fullName = "verbose", description = "Verbose output").default(false)
+    // @formatter:off
+    val operation by parser.option( ArgType.String,     shortName = "o", fullName = "operation",    description = "Operation")                              .required()
+    val text by parser.option(      ArgType.String,     shortName = "t", fullName = "text",         description = "Input file lines")
+    val file by parser.option(      ArgType.String,     shortName = "f", fullName = "file",         description = "Parsed Input file (field extracted)")
+    val max by parser.option(       ArgType.Int,        shortName = "m", fullName = "max",          description = "Take max values (-1=all)")
+    val indexes by parser.option(   ArgType.String,     shortName = "i", fullName = "index",        description = "Indexes of values to take")
+    val collect by parser.option(   ArgType.Boolean,    shortName = "c", fullName = "collect",      description = "Collect color expressions (#)")          .default(false)
+    val collectHex by parser.option(ArgType.Boolean,    shortName = "h", fullName = "collecthex",   description = "Collect color expressions (0x)")         .default(false)
+    val collectRgb by parser.option(ArgType.Boolean,    shortName = "h", fullName = "collectrgb",   description = "Collect color expressions (RGB)")        .default(false)
+    val day by parser.option(       ArgType.Boolean,    shortName = "d", fullName = "day",          description = "Theme day colors")                       .default(false)
+    val night by parser.option(     ArgType.Boolean,    shortName = "n", fullName = "night",        description = "Theme night colors")                     .default(false)
+    val full by parser.option(      ArgType.Boolean,    shortName = "x", fullName = "full",         description = "Full output")                            .default(false)
+    val verbose by parser.option(   ArgType.Boolean,    shortName = "v", fullName = "verbose",      description = "Verbose output")                         .default(false)
+    // @formatter:on
 
     // Positional Argument (no prefix)
     // vararg() to collect "everything else" into a List
@@ -32,6 +36,8 @@ fun main(args: Array<String>) {
         System.err.println("file: $file")
         System.err.println("arguments: $data")
     }
+
+    // from external source
 
     val textArgs = text?.let {
         val data0 = data
@@ -47,9 +53,19 @@ fun main(args: Array<String>) {
         data0
     }
 
-    if (scrape) {
+    // collector
+
+    if (collect) {
         data = findHashColors(data.joinToString(separator = "\n"))
     }
+    if (collectHex) {
+        data = findXColors(data.joinToString(separator = "\n"))
+    }
+    if (collectRgb) {
+        data = findRgbColors(data.joinToString(separator = "\n"))
+    }
+
+    // preprocessor
 
     if (day) {
         data = mapThemeColors1Day(data)
@@ -58,6 +74,8 @@ fun main(args: Array<String>) {
     if (night) {
         data = mapThemeColors1Night(data)
     }
+
+    // limit and extraction
 
     max?.let { data = data.take(it) }
 
@@ -71,15 +89,15 @@ fun main(args: Array<String>) {
             println(data)
         }
 
-        "scrape" -> {
+        "collect", "collect_hash" -> {
             findHashColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
-        "scrapex" -> {
+        "collect_hex" -> {
             findXColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
-        "scrapergb" -> {
+        "collect_rgb" -> {
             findRgbColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
@@ -175,11 +193,11 @@ fun main(args: Array<String>) {
             printAttrsXml()
         }
 
-        "themeday" -> {
+        "theme_day" -> {
             printDayM3ThemeXml()
         }
 
-        "themenight" -> {
+        "theme_night" -> {
             printNightM3ThemeXml()
         }
 
@@ -187,11 +205,11 @@ fun main(args: Array<String>) {
             printDayNightM3OverlaysXml()
         }
 
-        "overlaysday" -> {
+        "overlays_day" -> {
             printDayM3OverlaysXml()
         }
 
-        "overlaysnight" -> {
+        "overlays_night" -> {
             printNightM3OverlaysXml()
         }
 
@@ -199,35 +217,35 @@ fun main(args: Array<String>) {
             printXmlThemeColors(data, full = full)
         }
 
-        "colorsday" -> {
+        "colors_day" -> {
             printXmlThemeColorsDay(data, full = full)
         }
 
-        "colorsnight" -> {
+        "colors_night" -> {
             printXmlThemeColorsNight(data, full = full)
         }
 
-        "colors1day" -> {
+        "colors1_day" -> {
             printTextThemeColors1Day(data)
         }
 
-        "colors1night" -> {
+        "colors1_night" -> {
             printTextThemeColors1Night(data)
         }
 
-        "mapday" -> {
+        "map_day" -> {
             println(mapThemeColors1Day(data).joinToString(separator = " "))
         }
 
-        "mapnight" -> {
+        "map_night" -> {
             println(mapThemeColors1Night(data).joinToString(separator = " "))
         }
 
-        "themehtml" -> {
+        "theme_html" -> {
             printHtmlThemeColors(data, full = full)
         }
 
-        "themetext" -> {
+        "theme_text" -> {
             printTextThemeColors(data, full = full)
         }
 
