@@ -1,5 +1,6 @@
 package com.bbou.material.builder
 
+import com.bbou.material.builder.Search.findColorMap
 import com.bbou.material.builder.Search.findHashColors
 import com.bbou.material.builder.Search.findRgbColors
 import com.bbou.material.builder.Search.findXColors
@@ -15,11 +16,12 @@ fun main(args: Array<String>) {
     val operation by parser.option( ArgType.String,     shortName = "o", fullName = "operation",    description = "Operation")                              .required()
     val text by parser.option(      ArgType.String,     shortName = "t", fullName = "text",         description = "Input file lines")
     val file by parser.option(      ArgType.String,     shortName = "f", fullName = "file",         description = "Parsed Input file (field extracted)")
-    val max by parser.option(       ArgType.Int,        shortName = "m", fullName = "max",          description = "Take max values (-1=all)")
+    val max by parser.option(       ArgType.Int,        shortName = "a", fullName = "max",          description = "Take max values (-1=all)")
     val indexes by parser.option(   ArgType.String,     shortName = "i", fullName = "index",        description = "Indexes of values to take")
     val collect by parser.option(   ArgType.Boolean,    shortName = "c", fullName = "collect",      description = "Collect color expressions (#)")          .default(false)
     val collectHex by parser.option(ArgType.Boolean,    shortName = "b", fullName = "collecthex",   description = "Collect color expressions (0x)")         .default(false)
     val collectRgb by parser.option(ArgType.Boolean,    shortName = "3", fullName = "collectrgb",   description = "Collect color expressions (RGB)")        .default(false)
+    val collectMap by parser.option(ArgType.Boolean,    shortName = "m", fullName = "collectmap",   description = "Collect key-color expressions (#)")      .default(false)
     val day by parser.option(       ArgType.Boolean,    shortName = "d", fullName = "day",          description = "Theme day colors")                       .default(false)
     val night by parser.option(     ArgType.Boolean,    shortName = "n", fullName = "night",        description = "Theme night colors")                     .default(false)
     val full by parser.option(      ArgType.Boolean,    shortName = "x", fullName = "full",         description = "Full output")                            .default(false)
@@ -65,6 +67,11 @@ fun main(args: Array<String>) {
     if (collectRgb) {
         data = findRgbColors(data.joinToString(separator = "\n"))
     }
+    if (collectMap) {
+        val keyIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
+        val valueIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[1].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[1].toInt() else 0
+        data = findColorMap(data.joinToString(separator = "\n"), keyIndex, valueIndex)
+    }
 
     // preprocessor
 
@@ -102,6 +109,12 @@ fun main(args: Array<String>) {
             findRgbColors(data.joinToString(separator = "\n")).forEach { println(it) }
         }
 
+        "collect_map" -> {
+            val keyIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
+            val valueIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[1].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[1].toInt() else 1
+            findColorMap(data.joinToString(separator = "\n"), keyIndex, valueIndex).forEach { println(it) }
+        }
+
         "hct" -> {
             val dataInt = data.map { it.toColorInt() }.toIntArray()
             printHct(*dataInt)
@@ -128,7 +141,7 @@ fun main(args: Array<String>) {
         }
 
         "html" -> {
-            printHtmlColors(data, if (file != null) file!! else if (text != null) text!! else data.joinToString(separator=","))
+            printHtmlColors(data, if (file != null) file!! else if (text != null) text!! else data.joinToString(separator = ","))
         }
 
         "palette" -> {
@@ -300,7 +313,7 @@ fun printXmlThemeColorsNight(args: List<String>, full: Boolean = false) {
 fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {
     val lightColors = generateThemeColors(args, isDark = false, full = full)
     val darkColors = generateThemeColors(args, isDark = true, full = full)
-    printHtmlColors(lightColors, darkColors, args.joinToString(separator=","))
+    printHtmlColors(lightColors, darkColors, args.joinToString(separator = ","))
 }
 
 fun printTextThemeColors(args: List<String>, full: Boolean = false) {

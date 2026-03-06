@@ -25,6 +25,8 @@ object Search {
 
     const val RGB_PATTERN = "^([0-9]+)\\s+([0-9]+)\\s+([0-9]+)"
 
+    const val MAP_PATTERN = "^(.*)$"
+
     fun findHashColors(text: String): List<String> = findAllOccurrences(text, pattern = HASH_PATTERN)
 
     fun findXColors(text: String): List<String> = findAllOccurrences(text, pattern = X_PATTERN)
@@ -36,6 +38,17 @@ object Search {
             val g = match.groupValues[2].toInt()
             val b = match.groupValues[3].toInt()
             rgb(r, g, b).toColorString()
+        }.toList()
+    }
+
+    fun findColorMap(text: String, keyIndex: Int, valueIndex: Int): List<String> {
+        val results = findAllMatches(text, pattern = MAP_PATTERN).toList()
+        return results.map { match ->
+            val line = match.groupValues[1].trim()
+            val fields = line.split("\\s+".toRegex())
+            val key = fields[keyIndex]
+            val value = fields[valueIndex]
+            "$key=$value"
         }.toList()
     }
 
