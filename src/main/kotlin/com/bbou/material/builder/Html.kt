@@ -27,11 +27,15 @@ const val colorTemplate = "<tr><td>%LABEL%</td><td><div style=\"background-color
 const val colorTemplate2 =
     "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 
-fun printHtmlColors(colors: Map<String, String>, title: String) {
+fun printHtmlColors(colors: List<String>, title: String) {
     println(toHtml(colors, title))
 }
 
-fun printHtmlColors(colors: List<String>, title: String) {
+fun printHtmlColorNV(colors: List<Pair<String, String>>, title: String) {
+    println(toHtml(colors, title))
+}
+
+fun printHtmlColorMap(colors: Map<String, String>, title: String) {
     println(toHtml(colors, title))
 }
 
@@ -47,9 +51,13 @@ fun toHtml(colors: List<String>, title: String): String {
 }
 
 fun toHtml(colors: Map<String, String>, title: String): String {
-    val colorsDiv = colors.entries.joinToString(separator = "\n") {
-        val label = it.key
-        val value = it.value
+    return toHtml(colors.toList(), title = title)
+}
+
+fun toHtml(colors: Collection<Pair<String, String>>, title: String): String {
+    val colorsDiv = colors.joinToString(separator = "\n") {
+        val label = it.first
+        val value = it.second
         val foreground = if (value.toColorInt().isLight()) "#000000" else "#FFFFFF"
         colorTemplate
             .replace("%LABEL%", label)

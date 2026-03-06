@@ -41,14 +41,14 @@ object Search {
         }.toList()
     }
 
-    fun findColorMap(text: String, keyIndex: Int, valueIndex: Int): List<String> {
+    fun findColorNV(text: String, nameIndex: Int, valueIndex: Int, limit: Int = 0): List<String> {
         val results = findAllMatches(text, pattern = MAP_PATTERN).toList()
         return results.map { match ->
             val line = match.groupValues[1].trim()
-            val fields = line.split("\\s+".toRegex())
-            val key = fields[keyIndex]
+            val fields = line.split("\\s+".toRegex(), limit = limit)
+            val name = fields[nameIndex]
             val value = fields[valueIndex]
-            "$key=$value"
+            "$name=$value"
         }.toList()
     }
 
