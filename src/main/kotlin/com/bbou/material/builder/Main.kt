@@ -13,22 +13,22 @@ fun main(args: Array<String>) {
 
     // Options (start with - or --)
     // @formatter:off
-    val operation by parser.option( ArgType.String,     shortName = "o",    fullName = "operation",    description = "Operation")                                  .required()
-    val text by parser.option(      ArgType.String,     shortName = "t",    fullName = "text",         description = "Input file lines")
-    val file by parser.option(      ArgType.String,     shortName = "f",    fullName = "file",         description = "Parsed Input file (field extracted)")
-    val max by parser.option(       ArgType.Int,        shortName = "a",    fullName = "max",          description = "Take max values (-1=all)")
-    val indexes by parser.option(   ArgType.String,     shortName = "i",    fullName = "index",        description = "Indexes of values to take")
+    val operation by parser.option(     ArgType.String,     shortName = "o",    fullName = "operation",     description = "Operation")                                  .required()
+    val text by parser.option(          ArgType.String,     shortName = "t",    fullName = "text",          description = "Input file lines")
+    val file by parser.option(          ArgType.String,     shortName = "f",    fullName = "file",          description = "Parsed Input file (field extracted)")
+    val max by parser.option(           ArgType.Int,        shortName = "a",    fullName = "max",           description = "Take max values (-1=all)")
+    val indexes by parser.option(       ArgType.String,     shortName = "i",    fullName = "index",         description = "Indexes of values to take")
 
-    val collect by parser.option(   ArgType.Boolean,    shortName = "c",    fullName = "collect",      description = "Collect color expressions (#)")              .default(false)
-    val collectHex by parser.option(ArgType.Boolean,    shortName = "0x",   fullName = "collect_hex",  description = "Collect color expressions (0x)")             .default(false)
-    val collectRgb by parser.option(ArgType.Boolean,    shortName = "rgb",  fullName = "collect_rgb",  description = "Collect color expressions (RGB)")            .default(false)
-    val collectNV by parser.option( ArgType.Boolean,    shortName = "nv",   fullName = "collect_nv",   description = "Collect named color expressions (#)")        .default(false)
+    val precollect by parser.option(    ArgType.Boolean,    shortName = "c0",   fullName = "precollect",    description = "PreCollect color expressions")               .default(false)
+    val precollectBy by parser.option(  ArgType.String,     shortName = "by0",  fullName = "precollect_by", description = "PreCollect method")                          // "#", "0x", "rgb", "nv"
 
-    val day by parser.option(       ArgType.Boolean,    shortName = "d",    fullName = "day",          description = "Theme day colors")                           .default(false)
-    val night by parser.option(     ArgType.Boolean,    shortName = "n",    fullName = "night",        description = "Theme night colors")                         .default(false)
+    val collectBy by parser.option(     ArgType.String,     shortName = "by",   fullName = "collect_by",    description = "Collect method")                             // "#", "0x", "rgb", "nv"
 
-    val full by parser.option(      ArgType.Boolean,    shortName = "b",    fullName = "basic",        description = "Basic output")                               .default(false)
-    val verbose by parser.option(   ArgType.Boolean,    shortName = "v",    fullName = "verbose",      description = "Verbose output")                             .default(false)
+    val day by parser.option(           ArgType.Boolean,    shortName = "d",    fullName = "day",           description = "Theme day colors")                           .default(false)
+    val night by parser.option(         ArgType.Boolean,    shortName = "n",    fullName = "night",         description = "Theme night colors")                         .default(false)
+
+    val basic by parser.option(          ArgType.Boolean,    shortName = "b",    fullName = "basic",         description = "Basic output")                               .default(false)
+    val verbose by parser.option(       ArgType.Boolean,    shortName = "v",    fullName = "verbose",       description = "Verbose output")                             .default(false)
     // @formatter:on
 
     // Positional Argument (no prefix)
@@ -40,6 +40,9 @@ fun main(args: Array<String>) {
         System.err.println("operation: $operation")
         System.err.println("text: $text")
         System.err.println("file: $file")
+        System.err.println("precollect: $precollect")
+        System.err.println("precollect by: $precollectBy")
+        System.err.println("collect by: $collectBy")
         System.err.println("arguments: $data")
     }
 
@@ -61,19 +64,30 @@ fun main(args: Array<String>) {
 
     // collector
 
-    if (collect) {
-        data = findHashColors(data.joinToString(separator = "\n"))
-    }
-    if (collectHex) {
-        data = findXColors(data.joinToString(separator = "\n"))
-    }
-    if (collectRgb) {
-        data = findRgbColors(data.joinToString(separator = "\n"))
-    }
-    if (collectNV) {
-        val nameIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
-        val valueIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[1].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[1].toInt() else 1
-        data = findColorNV(data.joinToString(separator = "\n"), nameIndex, valueIndex, limit = 2)
+    if (precollect) {
+        when (precollectBy) {
+            "0x" -> {
+                data = findXColors(data.joinToString(separator = "\n"))
+            }
+
+            "rgb" -> {
+                data = findRgbColors(data.joinToString(separator = "\n"))
+            }
+
+            "nv" -> {
+                val nameIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
+                val valueIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[1].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[1].toInt() else 1
+                data = findColorNV(data.joinToString(separator = "\n"), nameIndex, valueIndex, limit = 2)
+            }
+
+            null, "#" -> {
+                data = findHashColors(data.joinToString(separator = "\n"))
+            }
+
+            else -> {
+                throw IllegalArgumentException(precollectBy)
+            }
+        }
     }
 
     // preprocessor
@@ -100,22 +114,30 @@ fun main(args: Array<String>) {
             println(data)
         }
 
-        "collect", "collect_hash" -> {
-            findHashColors(data.joinToString(separator = "\n")).forEach { println(it) }
-        }
+        "collect" -> {
+            when (collectBy) {
+                "0x" -> {
+                    findXColors(data.joinToString(separator = "\n")).forEach { println(it) }
+                }
 
-        "collect_hex" -> {
-            findXColors(data.joinToString(separator = "\n")).forEach { println(it) }
-        }
+                "rgb" -> {
+                    findRgbColors(data.joinToString(separator = "\n")).forEach { println(it) }
+                }
 
-        "collect_rgb" -> {
-            findRgbColors(data.joinToString(separator = "\n")).forEach { println(it) }
-        }
+                "nv" -> {
+                    val keyIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
+                    val valueIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[1].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[1].toInt() else 1
+                    findColorNV(data.joinToString(separator = "\n"), keyIndex, valueIndex).forEach { println(it) }
+                }
 
-        "collect_nv" -> {
-            val keyIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[0].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[0].toInt() else 0
-            val valueIndex = if (!fileArgs.isNullOrEmpty()) fileArgs[1].toInt() else if (!textArgs.isNullOrEmpty()) textArgs[1].toInt() else 1
-            findColorNV(data.joinToString(separator = "\n"), keyIndex, valueIndex).forEach { println(it) }
+                null, "#" -> {
+                    findHashColors(data.joinToString(separator = "\n")).forEach { println(it) }
+                }
+
+                else -> {
+                    throw IllegalArgumentException(collectBy)
+                }
+            }
         }
 
         "hct" -> {
@@ -240,15 +262,15 @@ fun main(args: Array<String>) {
         }
 
         "colors" -> {
-            printXmlThemeColors(data, full = full)
+            printXmlThemeColors(data, full = !basic)
         }
 
         "colors_day" -> {
-            printXmlThemeColorsDay(data, full = full)
+            printXmlThemeColorsDay(data, full = !basic)
         }
 
         "colors_night" -> {
-            printXmlThemeColorsNight(data, full = full)
+            printXmlThemeColorsNight(data, full = !basic)
         }
 
         "colors1_day" -> {
@@ -268,11 +290,11 @@ fun main(args: Array<String>) {
         }
 
         "theme_html" -> {
-            printHtmlThemeColors(data, full = full)
+            printHtmlThemeColors(data, full = !basic)
         }
 
         "theme_text" -> {
-            printTextThemeColors(data, full = full)
+            printTextThemeColors(data, full = !basic)
         }
 
         else -> throw IllegalArgumentException(operation)
