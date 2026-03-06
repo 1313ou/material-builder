@@ -109,13 +109,11 @@ fun generateM3XmlColors(
     contrasts: List<String> = listOf(),
     isDark: Boolean = false
 ): Map<String, String> {
-    val surfaceHct = Hct.fromInt(surfaceInput)
 
-
-    // Color map
+    // Result color map by role
     val colorMap = LinkedHashMap<String, String>()
 
-    // Custom
+    // C U S T O M
     customRolesRange.forEach { role ->
         val value = when (role) {
             "custom" -> surfaceInput.toColorString()
@@ -127,13 +125,15 @@ fun generateM3XmlColors(
         colorMap[role] = value
     }
 
-    // Surfaces
-    // Generate Schemes (using surface for the overall "Content" vibe)
+    // S U R F A C E
+    val surfaceHct = Hct.fromInt(surfaceInput)
+    // Generate Scheme (using surface for the overall "Content" vibe)
     val scheme = SchemeContent(surfaceHct, isDark, 0.0)
+    // Base contrast
     surfaceRolesRange.forEach { role ->
         colorMap[role] = "#${fromScheme(role, scheme)}"
     }
-    // contrast
+    // Medium and high contrast
     if (contrasts.isNotEmpty()) {
         contrasts.forEach { contrast ->
             val contrastLevel = when (contrast) {
@@ -149,7 +149,7 @@ fun generateM3XmlColors(
         }
     }
 
-    // Accents
+    // A C C E N T S
     // Setup accent hints
     val accentInputs = if (accentHints.size == 3) accentHints else {
         val primaryInput = accentHints[0]
@@ -157,15 +157,21 @@ fun generateM3XmlColors(
     }
     // Setup palettes for accents
     val palettes = Array(accentInputs.size) { TonalPalette.fromHct(Hct.fromInt(accentInputs[it])) }
+    // Base contrast
     accentRolesRange.forEach { role ->
         val data = accentRoleDefs[role]!!
-        colorMap[role] = "#${fromPalette(data.first, palettes[data.third - 1])}"
+        val tone = if (isDark) data.second else data.first
+        val paletteIndex = data.third - 1
+        colorMap[role] = "#${fromPalette(tone, palettes[paletteIndex])}"
     }
+    // Medium and high contrast
     contrasts.forEach { contrast ->
         accentRolesRange.forEach { role ->
             val contrastRole = "${role}_${contrast}Contrast"
             val data = accentRoleDefs[contrastRole]!!
-            colorMap[contrastRole] = "#${fromPalette(data.first, palettes[data.third - 1])}"
+            val tone = if (isDark) data.second else data.first
+            val paletteIndex = data.third - 1
+            colorMap[contrastRole] = "#${fromPalette(tone, palettes[paletteIndex])}"
         }
     }
     return colorMap
