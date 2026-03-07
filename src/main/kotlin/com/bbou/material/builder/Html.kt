@@ -39,9 +39,7 @@ fun printHtmlColorMap(colors: Map<String, String>, title: String) {
     println(toHtml(colors, title))
 }
 
-fun printHtmlColors(lightColors: Map<String, String>, darkColors: Map<String, String>, title: String) {
-    //println(toHtml(lightColors))
-    //println(toHtml(darkColors))
+fun printHtmlColorMaps(lightColors: Map<String, String>, darkColors: Map<String, String>, title: String) {
     println(toHtml2(lightColors, darkColors, title))
 }
 

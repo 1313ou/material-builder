@@ -24,10 +24,11 @@ fun main(args: Array<String>) {
 
     val collectBy by parser.option(     ArgType.String,     shortName = "by",   fullName = "collect_by",    description = "Collect method")                             // "#", "0x", "rgb", "nv"
 
-    val day by parser.option(           ArgType.Boolean,    shortName = "d",    fullName = "day",           description = "Theme day colors")                           .default(false)
-    val night by parser.option(         ArgType.Boolean,    shortName = "n",    fullName = "night",         description = "Theme night colors")                         .default(false)
+    val day by parser.option(           ArgType.Boolean,    shortName = "d0",   fullName = "day",           description = "Preprocess as theme day colors")             .default(false)
+    val night by parser.option(         ArgType.Boolean,    shortName = "n0",   fullName = "night",         description = "Preprocess as Theme night colors")           .default(false)
+    val dark by parser.option(          ArgType.Boolean,    shortName = "d",    fullName = "dark",          description = "Theme dark colors")                          .default(false)
 
-    val basic by parser.option(          ArgType.Boolean,    shortName = "b",    fullName = "basic",         description = "Basic output")                               .default(false)
+    val basic by parser.option(         ArgType.Boolean,    shortName = "b",    fullName = "basic",         description = "Basic output")                               .default(false)
     val verbose by parser.option(       ArgType.Boolean,    shortName = "v",    fullName = "verbose",       description = "Verbose output")                             .default(false)
     // @formatter:on
 
@@ -261,40 +262,45 @@ fun main(args: Array<String>) {
             printNightM3OverlaysXml()
         }
 
-        "colors" -> {
+        "colors2" -> {
             printXmlThemeColors(data, full = !basic)
         }
 
-        "colors_day" -> {
-            printXmlThemeColorsDay(data, full = !basic)
+        "colors" -> {
+            if (dark)
+                printXmlThemeColorsNight(data, full = !basic)
+            else
+                printXmlThemeColorsDay(data, full = !basic)
         }
 
-        "colors_night" -> {
-            printXmlThemeColorsNight(data, full = !basic)
+        "colors1" -> {
+            if (dark)
+                printTextThemeColors1Night(data)
+            else
+                printTextThemeColors1Day(data)
         }
 
-        "colors1_day" -> {
-            printTextThemeColors1Day(data)
+        "map" -> {
+            if (dark)
+                println(mapThemeColors1Night(data).joinToString(separator = " "))
+            else
+                println(mapThemeColors1Day(data).joinToString(separator = " "))
         }
 
-        "colors1_night" -> {
-            printTextThemeColors1Night(data)
-        }
-
-        "map_day" -> {
-            println(mapThemeColors1Day(data).joinToString(separator = " "))
-        }
-
-        "map_night" -> {
-            println(mapThemeColors1Night(data).joinToString(separator = " "))
+        "themes_html" -> {
+            printHtmlThemesColors(data, full = !basic)
         }
 
         "theme_html" -> {
-            printHtmlThemeColors(data, full = !basic)
+            printHtmlThemeColors(data, isDark = dark, full = !basic)
+        }
+
+        "themes_text" -> {
+            printTextThemesColors(data, full = !basic)
         }
 
         "theme_text" -> {
-            printTextThemeColors(data, full = !basic)
+            printTextThemeColors(data, isDark = dark, full = !basic)
         }
 
         else -> throw IllegalArgumentException(operation)
@@ -343,16 +349,26 @@ fun printXmlThemeColorsNight(args: List<String>, full: Boolean = false) {
     printXmlColors(colors, mode = "dark")
 }
 
-fun printHtmlThemeColors(args: List<String>, full: Boolean = false) {
+fun printHtmlThemesColors(args: List<String>, full: Boolean = false) {
     val lightColors = generateThemeColors(args, isDark = false, full = full)
     val darkColors = generateThemeColors(args, isDark = true, full = full)
-    printHtmlColors(lightColors, darkColors, args.joinToString(separator = ","))
+    printHtmlColorMaps(lightColors, darkColors, args.joinToString(separator = ","))
 }
 
-fun printTextThemeColors(args: List<String>, full: Boolean = false) {
+fun printHtmlThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = isDark, full = full)
+    printHtmlColorMap(colors, args.joinToString(separator = ","))
+}
+
+fun printTextThemesColors(args: List<String>, full: Boolean = false) {
     val lightColors = generateThemeColors(args, isDark = false, full = full)
     val darkColors = generateThemeColors(args, isDark = true, full = full)
     printTextColors(lightColors, darkColors)
+}
+
+fun printTextThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = isDark, full = full)
+    printTextColors(colors)
 }
 
 fun printTextThemeColors1Day(args: List<String>) {
