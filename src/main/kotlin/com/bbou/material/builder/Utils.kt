@@ -184,10 +184,26 @@ fun findSurfaceVariant(baseColorInt: Int, isDark: Boolean): Int {
  * Computes an accent variant.
  * @param baseColorInt color
  * @param isDark true if dark mode
+ * @param toneDark dark tone (near black)
+ * @param toneLight dark tone (near white)
  */
-fun findTonalVariant(baseColorInt: Int, isDark: Boolean, deltaDark: Int = 90, deltaLight: Int = 30): Int {
+fun findTonalVariantAbs(baseColorInt: Int, isDark: Boolean, toneDark: Int = 90, toneLight: Int = 30): Int {
     val palette = CorePalette.of(baseColorInt).a1
-    return palette.tone(if (isDark) deltaDark else deltaLight)
+    return palette.tone(if (isDark) toneDark else toneLight)
+}
+
+/**
+ * Computes an accent variant.
+ * @param baseColorInt color
+ * @param isDark true if dark mode
+ * @param deltaDark dark tone (10 darker)
+ * @param deltaLight dark tone (10 lighter)
+ */
+fun findTonalVariant(baseColorInt: Int, isDark: Boolean, deltaDark: Int = 10, deltaLight: Int = -10): Int {
+    val tone = Hct.fromInt(baseColorInt).tone
+    val variantTone = tone + if (isDark) deltaDark else deltaLight
+    val palette = CorePalette.of(baseColorInt).a1
+    return palette.tone(variantTone.toInt())
 }
 
 /**

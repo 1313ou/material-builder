@@ -118,7 +118,7 @@ fun generateM3XmlColors(
         val value = when (role) {
             "custom" -> surfaceInput.toColorString()
             "onCustom" -> findOnColor(surfaceInput, minRatio = 7.0).toColorString()
-            "customVariant" -> findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 90, deltaLight = 30).toColorString()
+            "customVariant" -> findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 10, deltaLight = -10).toColorString() // 10 darker, 10 lighter
             "onCustomVariant" -> findOnColor(findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 90, deltaLight = 30), minRatio = 7.0).toColorString()
             else -> throw IllegalArgumentException("Unknown custom $role")
         }
