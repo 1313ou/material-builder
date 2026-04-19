@@ -207,10 +207,35 @@ fun printXmlColors(vararg maps: Map<String, String>, mode: String, colorPrefix: 
     }
 }
 
-private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collection<String>, colorPrefix: String = "md_theme_") {
+fun printM3ThemeWithColorsXml(themeName: String, args: List<String>, isDark: Boolean = false, full: Boolean = true) {
+    val map = generateThemeColors(args, isDark = isDark, full = full)
+    val mode = if (isDark) "dark" else "light"
     val parent = "Theme.Material3.${mode.replaceFirstChar { it.uppercase() }}.NoActionBar"
-    println("\n<!-- $mode -->")
+    println("<resources>")
+    println("\t<style name=\"$themeName\" parent=\"$parent\">")
+    println("\t\t<!-- <item name=\"isDark\">${isDark}</item> -->")
+    println("\t\t<item name=\"colorCustom\">${map["custom"]}</item>")
+    println("\t\t<item name=\"colorOnCustom\">${map["onCustom"]}</item>")
+    println("\t\t<item name=\"colorCustomVariant\">${map["customVariant"]}</item>")
+    val rolesRange: Collection<String> = if (full) roles else rolesMin
+    rolesRange.forEach {
+        var attr = "color${it.replaceFirstChar { c -> c.uppercase() }}"
+        attr = attr.removeSuffix("_highContrast")
+        attr = attr.removeSuffix("_mediumContrast")
+        if (attr == "colorBackground")
+            attr = "android:$attr"
+        val value = map[it]
+        println("\t\t<item name=\"$attr\">${value}</item>")
+    }
+    println("\t</style>")
+    println("</resources>")
+}
+
+private fun printM3ThemeXml(themeName: String, isDark: Boolean = false, rolesRange: Collection<String>, colorPrefix: String = "md_theme_") {
+    val mode = if (isDark) "dark" else "light"
+    val parent = "Theme.Material3.${mode.replaceFirstChar { it.uppercase() }}.NoActionBar"
     println("<style name=\"$themeName\" parent=\"$parent\">")
+    println("\t<!-- <item name=\"isDark\">${isDark}</item> -->")
     println("\t<item name=\"colorCustom\">@color/${colorPrefix}custom</item>")
     println("\t<item name=\"colorOnCustom\">@color/${colorPrefix}onCustom</item>")
     println("\t<item name=\"colorCustomVariant\">@color/${colorPrefix}customVariant</item>")
@@ -231,20 +256,20 @@ private fun printM3ThemeXml(themeName: String, mode: String, rolesRange: Collect
  */
 fun printDayNightM3ThemeXml(themeName: String = "AppTheme", rolesRange: List<String> = roles) {
     println("<resources>")
-    printM3ThemeXml(themeName, "light", rolesRange)
-    printM3ThemeXml(themeName, "dark", rolesRange)
+    printM3ThemeXml(themeName, isDark = false, rolesRange)
+    printM3ThemeXml(themeName, isDark = true, rolesRange)
     println("</resources>")
 }
 
 fun printDayM3ThemeXml(themeName: String = "AppTheme", rolesRange: List<String> = roles) {
     println("<resources>")
-    printM3ThemeXml(themeName, "light", rolesRange)
+    printM3ThemeXml(themeName, isDark = false, rolesRange)
     println("</resources>")
 }
 
 fun printNightM3ThemeXml(themeName: String = "AppTheme", rolesRange: List<String> = roles) {
     println("<resources>")
-    printM3ThemeXml(themeName, "dark", rolesRange)
+    printM3ThemeXml(themeName, isDark = true, rolesRange)
     println("</resources>")
 }
 
@@ -258,18 +283,18 @@ fun printDayNightM3OverlaysXml(overlayName: String = "ThemeOverlays.AppTheme", r
 fun printDayM3OverlaysXml(overlayName: String = "ThemeOverlays.AppTheme", rolesRange: List<String> = roles) {
     println("<resources>")
     val rolesMediumContrast = rolesRange.map { it + "_mediumContrast" }.toList()
-    printM3ThemeXml("$overlayName.MediumContrast", "light", rolesMediumContrast)
+    printM3ThemeXml("$overlayName.MediumContrast", isDark = false, rolesMediumContrast)
     val rolesHighContrast = rolesRange.map { it + "_highContrast" }.toList()
-    printM3ThemeXml("$overlayName.HighContrast", "light", rolesHighContrast)
+    printM3ThemeXml("$overlayName.HighContrast", isDark = false, rolesHighContrast)
     println("</resources>")
 }
 
 fun printNightM3OverlaysXml(overlayName: String = "ThemeOverlays.AppTheme", rolesRange: List<String> = roles) {
     println("<resources>")
     val rolesMediumContrast = rolesRange.map { it + "_mediumContrast" }.toList()
-    printM3ThemeXml("$overlayName.MediumContrast", "dark", rolesMediumContrast)
+    printM3ThemeXml("$overlayName.MediumContrast", isDark = true, rolesMediumContrast)
     val rolesHighContrast = rolesRange.map { it + "_highContrast" }.toList()
-    printM3ThemeXml("$overlayName.HighContrast", "dark", rolesHighContrast)
+    printM3ThemeXml("$overlayName.HighContrast", isDark = true, rolesHighContrast)
     println("</resources>")
 }
 

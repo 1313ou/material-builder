@@ -18,6 +18,7 @@ fun main(args: Array<String>) {
     val file by parser.option(          ArgType.String,     shortName = "f",    fullName = "file",          description = "Parsed Input file (field extracted)")
     val max by parser.option(           ArgType.Int,        shortName = "a",    fullName = "max",           description = "Take max values (-1=all)")
     val indexes by parser.option(       ArgType.String,     shortName = "i",    fullName = "index",         description = "Indexes of values to take")
+    val name by parser.option(          ArgType.String,     shortName = "n",    fullName = "name",          description = "Theme name")                                 .default("MyTheme")
 
     val precollect by parser.option(    ArgType.Boolean,    shortName = "c0",   fullName = "precollect",    description = "PreCollect color expressions")               .default(false)
     val precollectBy by parser.option(  ArgType.String,     shortName = "by0",  fullName = "precollect_by", description = "PreCollect method")                          // "#", "0x", "rgb", "nv"
@@ -242,6 +243,10 @@ fun main(args: Array<String>) {
             printAttrsXml()
         }
 
+        "theme" -> {
+            if (dark) printNightM3ThemeXml() else printDayM3ThemeXml()
+        }
+
         "theme_day" -> {
             printDayM3ThemeXml()
         }
@@ -250,8 +255,16 @@ fun main(args: Array<String>) {
             printNightM3ThemeXml()
         }
 
+        "theme_daynight" -> {
+            printDayNightM3ThemeXml()
+        }
+
+       "theme_with_colors" -> {
+           printM3ThemeWithColorsXml(name, data,  isDark = dark)
+        }
+
         "overlays" -> {
-            printDayNightM3OverlaysXml()
+            if (dark) printNightM3OverlaysXml() else printDayM3OverlaysXml()
         }
 
         "overlays_day" -> {
@@ -260,6 +273,10 @@ fun main(args: Array<String>) {
 
         "overlays_night" -> {
             printNightM3OverlaysXml()
+        }
+
+        "overlays_daynight" -> {
+            printDayNightM3OverlaysXml()
         }
 
         "colors2" -> {
