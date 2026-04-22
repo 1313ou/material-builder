@@ -6,6 +6,9 @@ val customRoles = listOf(
     "custom",
     "onCustom",
     "customVariant",
+    "onCustomVariant",
+    "customContainer",
+    "onCustomContainer",
 )
 
 val customRoles1 = listOf("custom")

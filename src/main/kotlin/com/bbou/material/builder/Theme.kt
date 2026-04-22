@@ -8,9 +8,10 @@ const val attrs = """
 <resources>
   <attr name="colorCustom" format="color" />
   <attr name="colorOnCustom" format="color" />
-  <attr name="colorContainerCustom" format="color" />
-  <attr name="colorOnContainerCustom" format="color" />
   <attr name="colorCustomVariant" format="color" />
+  <attr name="colorOnCustomVariant" format="color" />
+  <attr name="colorCustomContainer" format="color" />
+  <attr name="colorOnCustomContainer" format="color" />
 </resources>
 """
 
@@ -120,6 +121,8 @@ fun generateM3XmlColors(
             "onCustom" -> findOnColor(surfaceInput, minRatio = 7.0).toColorString()
             "customVariant" -> findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 10, deltaLight = -10).toColorString() // 10 darker, 10 lighter
             "onCustomVariant" -> findOnColor(findTonalVariant(surfaceInput, isDark = isDark, deltaDark = 90, deltaLight = 30), minRatio = 7.0).toColorString()
+            "customContainer" -> findSurfaceVariant(surfaceInput, isDark = isDark).toColorString()
+            "onCustomContainer" -> findOnColor(findSurfaceVariant(surfaceInput, isDark = isDark), minRatio = 7.0).toColorString()
             else -> throw IllegalArgumentException("Unknown custom $role")
         }
         colorMap[role] = value
@@ -217,6 +220,9 @@ fun printM3ThemeWithColorsXml(themeName: String, args: List<String>, isDark: Boo
     println("\t\t<item name=\"colorCustom\">${map["custom"]}</item>")
     println("\t\t<item name=\"colorOnCustom\">${map["onCustom"]}</item>")
     println("\t\t<item name=\"colorCustomVariant\">${map["customVariant"]}</item>")
+    println("\t\t<item name=\"colorOnCustomVariant\">${map["onCustomVariant"]}</item>")
+    println("\t\t<item name=\"colorCustomContainer\">${map["customContainer"]}</item>")
+    println("\t\t<item name=\"colorOnCustomContainer\">${map["onCustomContainer"]}</item>")
     val rolesRange: Collection<String> = if (full) roles else rolesMin
     rolesRange.forEach {
         var attr = "color${it.replaceFirstChar { c -> c.uppercase() }}"
@@ -239,6 +245,7 @@ private fun printM3ThemeXml(themeName: String, isDark: Boolean = false, rolesRan
     println("\t<item name=\"colorCustom\">@color/${colorPrefix}custom</item>")
     println("\t<item name=\"colorOnCustom\">@color/${colorPrefix}onCustom</item>")
     println("\t<item name=\"colorCustomVariant\">@color/${colorPrefix}customVariant</item>")
+    println("\t<item name=\"colorOnCustomVariant\">@color/${colorPrefix}onCustomVariant</item>")
     rolesRange.forEach {
         var attr = "color${it.replaceFirstChar { c -> c.uppercase() }}"
         attr = attr.removeSuffix("_highContrast")
