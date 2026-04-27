@@ -246,8 +246,8 @@ private fun printM3ThemeXml(themeName: String, isDark: Boolean = false, rolesRan
     println("\t<item name=\"colorOnCustom\">@color/${colorPrefix}onCustom</item>")
     println("\t<item name=\"colorCustomVariant\">@color/${colorPrefix}customVariant</item>")
     println("\t<item name=\"colorOnCustomVariant\">@color/${colorPrefix}onCustomVariant</item>")
-    println("\t\t<item name=\"colorCustomContainer\">@color/${colorPrefix}customContainer</item>")
-    println("\t\t<item name=\"colorOnCustomContainer\">@color/$colorPrefix}onCustomContainer</item>")
+    println("\t<item name=\"colorCustomContainer\">@color/${colorPrefix}customContainer</item>")
+    println("\t<item name=\"colorOnCustomContainer\">@color/$colorPrefix}onCustomContainer</item>")
     rolesRange.forEach {
         var attr = "color${it.replaceFirstChar { c -> c.uppercase() }}"
         attr = attr.removeSuffix("_highContrast")
