@@ -88,6 +88,28 @@ fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: S
         .replace("%TITLE%", title)
 }
 
+fun contrastsToHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: String): String {
+    val colorsDiv = contrasts
+        .map { (fore, back) ->
+            val lightValue = colors1[back]!!
+            val darkValue = colors2[back]!!
+            val lightForeground = colors1[fore]!!
+            val darkForeground = colors2[fore]!!
+            colorTemplate2
+                .replace("%LABEL%", "$fore on $back")
+                .replace("%LVALUE%", lightValue)
+                .replace("%DVALUE%", lightValue)
+                .replace("%LBACKGROUND%", lightValue)
+                .replace("%LFOREGROUND%", lightForeground)
+                .replace("%DBACKGROUND%", darkValue)
+                .replace("%DFOREGROUND%", darkForeground)
+        }
+        .joinToString(separator = "\n")
+    return template
+        .replace("%COLORS%", colorsDiv)
+        .replace("%TITLE%", title)
+}
+
 private fun Int.isLight(): Boolean {
     return Hct.fromInt(this).tone > 50.0
 }
