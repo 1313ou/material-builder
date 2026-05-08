@@ -43,6 +43,14 @@ fun printHtmlColorMaps(lightColors: Map<String, String>, darkColors: Map<String,
     println(toHtml2(lightColors, darkColors, title))
 }
 
+fun printHtmlColorContrast(colors: Map<String, String>, title: String) {
+    println(contrastsToHtml(colors, title))
+}
+
+fun printHtmlColorContrasts(lightColors: Map<String, String>, darkColors: Map<String, String>, title: String) {
+    println(contrastsToHtml2(lightColors, darkColors, title))
+}
+
 fun toHtml(colors: List<String>, title: String): String {
     val map = colors.associateWith { it }
     return toHtml(map, title)
@@ -55,13 +63,13 @@ fun toHtml(colors: Map<String, String>, title: String): String {
 fun toHtml(colors: Collection<Pair<String, String>>, title: String): String {
     val colorsDiv = colors.joinToString(separator = "\n") {
         val label = it.first
-        val value = it.second
-        val foreground = if (value.toColorInt().isLight()) "#000000" else "#FFFFFF"
+        val back = it.second
+        val fore = if (back.toColorInt().isLight()) "#000000" else "#FFFFFF"
         colorTemplate
             .replace("%LABEL%", label)
-            .replace("%FOREGROUND%", foreground)
-            .replace("%VALUE%", value)
-            .replace("%BACKGROUND%", value)
+            .replace("%VALUE%", back)
+            .replace("%BACKGROUND%", back)
+            .replace("%FOREGROUND%", fore)
     }
     return template
         .replace("%COLORS%", colorsDiv)
@@ -70,19 +78,36 @@ fun toHtml(colors: Collection<Pair<String, String>>, title: String): String {
 
 fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: String): String {
     val colorsDiv = colors1.keys.joinToString(separator = "\n") {
-        val lightValue = colors1[it]!!
-        val darkValue = colors2[it]!!
-        val lightForeground = if (lightValue.toColorInt().isLight()) "#000000" else "#FFFFFF"
-        val darkForeground = if (lightValue.toColorInt().isLight()) "#000000" else "#FFFFFF"
+        val lightBack = colors1[it]!!
+        val darkBack = colors2[it]!!
+        val lightFore = if (lightBack.toColorInt().isLight()) "#000000" else "#FFFFFF"
+        val darkFore = if (lightBack.toColorInt().isLight()) "#000000" else "#FFFFFF"
         colorTemplate2
             .replace("%LABEL%", it)
-            .replace("%LVALUE%", lightValue)
-            .replace("%DVALUE%", lightValue)
-            .replace("%LBACKGROUND%", lightValue)
-            .replace("%LFOREGROUND%", lightForeground)
-            .replace("%DBACKGROUND%", darkValue)
-            .replace("%DFOREGROUND%", darkForeground)
+            .replace("%LVALUE%", lightBack)
+            .replace("%DVALUE%", darkBack)
+            .replace("%LBACKGROUND%", lightBack)
+            .replace("%DBACKGROUND%", darkBack)
+            .replace("%LFOREGROUND%", lightFore)
+            .replace("%DFOREGROUND%", darkFore)
     }
+    return template
+        .replace("%COLORS%", colorsDiv)
+        .replace("%TITLE%", title)
+}
+
+fun contrastsToHtml(colors: Map<String, String>, title: String): String {
+    val colorsDiv = contrasts
+        .map { (foreKey, backKey) ->
+            val back = colors[backKey]!!
+            val fore = colors[foreKey]!!
+            colorTemplate
+                .replace("%LABEL%", "$foreKey on $backKey")
+                .replace("%VALUE%", back)
+                .replace("%BACKGROUND%", back)
+                .replace("%FOREGROUND%", fore)
+        }
+        .joinToString(separator = "\n")
     return template
         .replace("%COLORS%", colorsDiv)
         .replace("%TITLE%", title)
@@ -90,19 +115,19 @@ fun toHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: S
 
 fun contrastsToHtml2(colors1: Map<String, String>, colors2: Map<String, String>, title: String): String {
     val colorsDiv = contrasts
-        .map { (fore, back) ->
-            val lightValue = colors1[back]!!
-            val darkValue = colors2[back]!!
-            val lightForeground = colors1[fore]!!
-            val darkForeground = colors2[fore]!!
+        .map { (foreKey, backKey) ->
+            val lightBack = colors1[backKey]!!
+            val darkBack = colors2[backKey]!!
+            val lightFore = colors1[foreKey]!!
+            val darkFore = colors2[foreKey]!!
             colorTemplate2
-                .replace("%LABEL%", "$fore on $back")
-                .replace("%LVALUE%", lightValue)
-                .replace("%DVALUE%", lightValue)
-                .replace("%LBACKGROUND%", lightValue)
-                .replace("%LFOREGROUND%", lightForeground)
-                .replace("%DBACKGROUND%", darkValue)
-                .replace("%DFOREGROUND%", darkForeground)
+                .replace("%LABEL%", "$foreKey on $backKey")
+                .replace("%LVALUE%", lightBack)
+                .replace("%DVALUE%", darkBack)
+                .replace("%LBACKGROUND%", lightBack)
+                .replace("%DBACKGROUND%", darkBack)
+                .replace("%LFOREGROUND%", lightFore)
+                .replace("%DFOREGROUND%", darkFore)
         }
         .joinToString(separator = "\n")
     return template

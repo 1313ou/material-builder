@@ -259,8 +259,8 @@ fun main(args: Array<String>) {
             printDayNightM3ThemeXml()
         }
 
-       "theme_with_colors" -> {
-           printM3ThemeWithColorsXml(name, data,  isDark = dark)
+        "theme_with_colors" -> {
+            printM3ThemeWithColorsXml(name, data, isDark = dark)
         }
 
         "overlays" -> {
@@ -305,15 +305,19 @@ fun main(args: Array<String>) {
         }
 
         "themes_html" -> {
-            printHtmlThemesColors(data, full = !basic)
+            printHtmlTwinThemesColors(data, full = !basic)
         }
 
         "theme_html" -> {
             printHtmlThemeColors(data, isDark = dark, full = !basic)
         }
 
+        "contrasts_html" -> {
+            printHtmlTwinThemesContrasts(data, full = !basic)
+        }
+
         "themes_text" -> {
-            printTextThemesColors(data, full = !basic)
+            printTextTwinThemesColors(data, full = !basic)
         }
 
         "theme_text" -> {
@@ -351,6 +355,8 @@ fun printAccentColors(accents: Triple<Int, Int, Int>, tone: Int = 40) {
     println("Tertiary (Tone $tone): ${tertiaryColor.toColorString()}")
 }
 
+// X M L
+
 fun printXmlThemeColors(args: List<String>, full: Boolean = false) {
     printXmlThemeColorsDay(args, full = full)
     printXmlThemeColorsNight(args, full = full)
@@ -366,47 +372,64 @@ fun printXmlThemeColorsNight(args: List<String>, full: Boolean = false) {
     printXmlColors(colors, mode = "dark")
 }
 
-fun printHtmlThemesColors(args: List<String>, full: Boolean = false) {
-    val lightColors = generateThemeColors(args, isDark = false, full = full)
-    val darkColors = generateThemeColors(args, isDark = true, full = full)
-    printHtmlColorMaps(lightColors, darkColors, args.joinToString(separator = ","))
-}
+// H T M L
 
 fun printHtmlThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
     val colors = generateThemeColors(args, isDark = isDark, full = full)
     printHtmlColorMap(colors, args.joinToString(separator = ","))
 }
 
-fun printTextThemesColors(args: List<String>, full: Boolean = false) {
+fun printHtmlThemeContrasts(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = isDark, full = full)
+    printHtmlColorContrast(colors, args.joinToString(separator = ","))
+}
+
+fun printHtmlTwinThemesColors(args: List<String>, full: Boolean = false) {
     val lightColors = generateThemeColors(args, isDark = false, full = full)
     val darkColors = generateThemeColors(args, isDark = true, full = full)
-    printTextColors(lightColors, darkColors)
+    printHtmlColorMaps(lightColors, darkColors, args.joinToString(separator = ","))
 }
+
+fun printHtmlTwinThemesContrasts(args: List<String>, full: Boolean = false) {
+    val lightColors = generateThemeColors(args, isDark = false, full = full)
+    val darkColors = generateThemeColors(args, isDark = true, full = full)
+    printHtmlColorContrasts(lightColors, darkColors, args.joinToString(separator = ","))
+}
+
+// T E X T
 
 fun printTextThemeColors(args: List<String>, isDark: Boolean = false, full: Boolean = false) {
     val colors = generateThemeColors(args, isDark = isDark, full = full)
     printTextColors(colors)
 }
 
-fun printTextThemeColors1Day(args: List<String>) {
-    val lightColors = generateThemeColors(args, isDark = false, one = true)
-    printTextColors(lightColors)
+fun printTextTwinThemesColors(args: List<String>, full: Boolean = false) {
+    val lightColors = generateThemeColors(args, isDark = false, full = full)
+    val darkColors = generateThemeColors(args, isDark = true, full = full)
+    printTextColors(lightColors, darkColors)
 }
 
-fun printTextThemeColors1Night(args: List<String>) {
-    val darkColors = generateThemeColors(args, isDark = true, one = true)
-    printTextColors(darkColors)
+fun printTextThemeColors1(args: List<String>, isDark: Boolean = false) {
+    val colors = generateThemeColors(args, isDark = isDark, one = true)
+    printTextColors(colors)
 }
 
-fun mapThemeColors1Day(args: List<String>): List<String> {
-    val lightColors = generateThemeColors(args, isDark = false, one = true)
-    return mapColors(lightColors)
+fun printTextThemeColors1Day(args: List<String>) = printTextThemeColors1(args, isDark = false)
+
+fun printTextThemeColors1Night(args: List<String>) = printTextThemeColors1(args, isDark = true)
+
+// M A P
+
+fun mapThemeColors1(args: List<String>, isDark: Boolean = false): List<String> {
+    val colors = generateThemeColors(args, isDark = isDark, one = true)
+    return mapColors(colors)
 }
 
-fun mapThemeColors1Night(args: List<String>): List<String> {
-    val darkColors = generateThemeColors(args, isDark = true, one = true)
-    return mapColors(darkColors)
-}
+fun mapThemeColors1Day(args: List<String>): List<String> = mapThemeColors1(args, isDark = false)
+
+fun mapThemeColors1Night(args: List<String>): List<String> = mapThemeColors1(args, isDark = false)
+
+// G E N E R A T E
 
 fun generateThemeColors(args: List<String>, isDark: Boolean = false, contrasts: List<String> = listOf("medium", "high"), full: Boolean = false, one: Boolean = false): Map<String, String> {
     val surfaceHintHex = args[0]
