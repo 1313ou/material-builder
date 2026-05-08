@@ -28,6 +28,8 @@ const val colorTemplate2 =
     "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 const val contrastTemplate =
     "<tr><td>%LABELFOREGROUND%</td><td>/</td><td>%LABELBACKGROUND%</td><td>%CONTRAST%</td><td>%PASS%</td><td><div style=\"background-color:%BACKGROUND%; color:%FOREGROUND%\"><span>%VALUE%</span></div></td><td><div style=\"background-color:%INVBACKGROUND%; color:%INVFOREGROUND%\"><span>%INVVALUE%</span></div></td></tr>"
+const val contrastTemplate2 =
+    "<tr><td>%LABEL%</td><td>%LCONTRAST%</td><td>%LPASS%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td>%DCONTRAST%</td><td>%DPASS%</td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 
 fun printHtmlColors(colors: List<String>, title: String) {
     println(toHtml(colors, title))
@@ -130,13 +132,19 @@ fun contrastsToHtml2(colors1: Map<String, String>, colors2: Map<String, String>,
             val darkBack = colors2[backKey]!!
             val lightFore = colors1[foreKey]!!
             val darkFore = colors2[foreKey]!!
-            colorTemplate2
+            val (lightPass, lightRatio) = contrast(lightFore.toColorInt(), lightBack.toColorInt())
+            val (darkPass, darkRatio) = contrast(darkFore.toColorInt(), darkBack.toColorInt())
+            contrastTemplate2
                 .replace("%LABEL%", "$foreKey on $backKey")
+                .replace("%LPASS%", if (lightPass) "PASS" else "FAIL")
+                .replace("%LCONTRAST%", lightRatio.ratioFormat())
                 .replace("%LVALUE%", lightBack)
-                .replace("%DVALUE%", darkBack)
                 .replace("%LBACKGROUND%", lightBack)
-                .replace("%DBACKGROUND%", darkBack)
                 .replace("%LFOREGROUND%", lightFore)
+                .replace("%DPASS%", if (darkPass) "PASS" else "FAIL")
+                .replace("%DCONTRAST%", darkRatio.ratioFormat())
+                .replace("%DVALUE%", darkBack)
+                .replace("%DBACKGROUND%", darkBack)
                 .replace("%DFOREGROUND%", darkFore)
         }
         .joinToString(separator = "\n")
