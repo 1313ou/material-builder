@@ -316,6 +316,10 @@ fun main(args: Array<String>) {
             printHtmlTwinThemesContrasts(data, full = !basic)
         }
 
+        "contrast_html" -> {
+            printHtmlThemeContrasts(data, full = !basic)
+        }
+
         "themes_text" -> {
             printTextTwinThemesColors(data, full = !basic)
         }
