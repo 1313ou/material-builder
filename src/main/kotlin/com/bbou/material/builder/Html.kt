@@ -26,6 +26,8 @@ document.getElementById('colors').addEventListener('click', function(event){ if 
 const val colorTemplate = "<tr><td>%LABEL%</td><td><div style=\"background-color:%BACKGROUND%; color:%FOREGROUND%\"><span>%VALUE%</span></div></td></tr>"
 const val colorTemplate2 =
     "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
+const val contrastTemplate =
+    "<tr><td>%LABELFOREGROUND%</td><td>on</td><td>%LABELBACKGROUND%</td><td>%CONTRAST%</td><td>%PASS%</td><td><div style=\"background-color:%BACKGROUND%; color:%FOREGROUND%\"><span>%VALUE%</span></div></td><td><div style=\"background-color:%INVBACKGROUND%; color:%INVFOREGROUND%\"><span>%INVVALUE%</span></div></td></tr>"
 
 fun printHtmlColors(colors: List<String>, title: String) {
     println(toHtml(colors, title))
@@ -101,11 +103,19 @@ fun contrastsToHtml(colors: Map<String, String>, title: String): String {
         .map { (foreKey, backKey) ->
             val back = colors[backKey]!!
             val fore = colors[foreKey]!!
-            colorTemplate
-                .replace("%LABEL%", "$foreKey on $backKey")
-                .replace("%VALUE%", back)
-                .replace("%BACKGROUND%", back)
-                .replace("%FOREGROUND%", fore)
+            val (pass, ratio) = contrast(fore.toColorInt(), back.toColorInt())
+
+            contrastTemplate
+                .replace("%LABELFOREGROUND%", foreKey)
+                .replace("%LABELBACKGROUND%", backKey)
+                .replace("%CONTRAST%", ratio.ratioFormat())
+                .replace("%PASS%", if (pass) "PASS" else "FAIL")
+                .replace("%INVVALUE%", back)
+                .replace("%INVBACKGROUND%", back)
+                .replace("%INVFOREGROUND%", fore)
+                .replace("%VALUE%", fore)
+                .replace("%BACKGROUND%", fore)
+                .replace("%FOREGROUND%", back)
         }
         .joinToString(separator = "\n")
     return template

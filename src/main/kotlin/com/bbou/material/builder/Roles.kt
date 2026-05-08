@@ -185,7 +185,7 @@ val roles1 = surfaceRoles1 + accentRoles1
 
 const val namePrefix = "md_theme_"
 
-val contrasts = mapOf(
+val contrasts = listOf(
     "onSurface" to "surface",
     "primary" to "surface",
     "secondary" to "surface",

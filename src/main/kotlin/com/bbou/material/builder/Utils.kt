@@ -351,7 +351,7 @@ fun auditThemeAccessibility(foregroundInt: Int, backgroundInt: Int, label: Strin
     exitProcess(if (pass) 0 else 1)
 }
 
-fun checkContrast(foregroundInt: Int, backgroundInt: Int, label: String) {
+fun contrast(foregroundInt: Int, backgroundInt: Int): Pair<Boolean, Double> {
     // 1. Convert colors to HCT to get their Tones
     val fgTone = Hct.fromInt(foregroundInt).tone
     val bgTone = Hct.fromInt(backgroundInt).tone
@@ -360,6 +360,13 @@ fun checkContrast(foregroundInt: Int, backgroundInt: Int, label: String) {
     val ratio = Contrast.ratioOfTones(fgTone, bgTone)
 
     val pass = ratio >= 4.5
-    if (pass)
-        System.err.println("$label: ${"%.2f".format(ratio)}:1 ⚠️ LOW CONTRAST")
+    return pass to ratio
 }
+
+fun checkContrast(foregroundInt: Int, backgroundInt: Int, label: String) {
+    val (pass, ratio) = contrast(foregroundInt, backgroundInt)
+    if (pass)
+        System.err.println("$label: ${ratio.ratioFormat()} ⚠️ LOW CONTRAST")
+}
+
+fun Double.ratioFormat() = "${"%.2f".format(this)}:1"
