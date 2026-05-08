@@ -27,7 +27,7 @@ const val colorTemplate = "<tr><td>%LABEL%</td><td><div style=\"background-color
 const val colorTemplate2 =
     "<tr><td>%LABEL%</td><td><div style=\"background-color:%LBACKGROUND%; color:%LFOREGROUND%\"><span>%LVALUE%</span></div></td><td><div style=\"background-color:%DBACKGROUND%; color:%DFOREGROUND%\"><span>%DVALUE%</span></div></td></tr>"
 const val contrastTemplate =
-    "<tr><td>%LABELFOREGROUND%</td><td>on</td><td>%LABELBACKGROUND%</td><td>%CONTRAST%</td><td>%PASS%</td><td><div style=\"background-color:%BACKGROUND%; color:%FOREGROUND%\"><span>%VALUE%</span></div></td><td><div style=\"background-color:%INVBACKGROUND%; color:%INVFOREGROUND%\"><span>%INVVALUE%</span></div></td></tr>"
+    "<tr><td>%LABELFOREGROUND%</td><td>/</td><td>%LABELBACKGROUND%</td><td>%CONTRAST%</td><td>%PASS%</td><td><div style=\"background-color:%BACKGROUND%; color:%FOREGROUND%\"><span>%VALUE%</span></div></td><td><div style=\"background-color:%INVBACKGROUND%; color:%INVFOREGROUND%\"><span>%INVVALUE%</span></div></td></tr>"
 
 fun printHtmlColors(colors: List<String>, title: String) {
     println(toHtml(colors, title))
